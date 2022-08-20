@@ -2,8 +2,8 @@
 
 [![PyPI](https://img.shields.io/pypi/v/igm)](https://pypi.org/project/igm/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/igm)
-![Loc](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/HansBug/cfbcfc91f1353f1d4b2607c433d46bd6/raw/loc.json)
-![Comments](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/HansBug/cfbcfc91f1353f1d4b2607c433d46bd6/raw/comments.json)
+![Loc](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/HansBug/99cb08da2773e37cc1338ae8be12d798/raw/loc.json)
+![Comments](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/HansBug/99cb08da2773e37cc1338ae8be12d798/raw/comments.json)
 
 [![Docs Deploy](https://github.com/igm4ai/igm/workflows/Docs%20Deploy/badge.svg)](https://github.com/igm4ai/igm/actions?query=workflow%3A%22Docs+Deploy%22)
 [![Code Test](https://github.com/igm4ai/igm/workflows/Code%20Test/badge.svg)](https://github.com/igm4ai/igm/actions?query=workflow%3A%22Code+Test%22)
