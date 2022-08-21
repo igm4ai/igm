@@ -41,13 +41,13 @@ def load_igm_setup(path: str, setup_filename='meta.py') -> IGMSession:
     if not os.path.exists(path):
         raise FileNotFoundError(path)
 
+    path = os.path.abspath(path)
     if os.path.isfile(path):
         (pathdir, _), pathfile = os.path.split(path), path
     else:
         pathdir, pathfile = path, os.path.join(path, setup_filename)
 
     session_id = random_sha1_with_timestamp()
-
     with with_pythonpath(pathdir):
         with open(pathfile, 'r') as sf:
             exec(sf.read(), {
