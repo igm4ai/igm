@@ -4,10 +4,10 @@ from typing import Dict
 
 from hbutils.random import random_sha1_with_timestamp
 
-from ..session import IGMSession
+from ..template import IGMTemplate
 from ..utils import get_global, with_pythonpath
 
-_IGM_SESSIONS: Dict[str, IGMSession] = {}
+_IGM_SESSIONS: Dict[str, IGMTemplate] = {}
 _IGM_SESSION_ID_NAME = '__igm_session_id__'
 _IGM_PATH_NAME = '__igm_path__'
 
@@ -18,14 +18,14 @@ def igm_setup(
         version: str,
         description: str,
         template_dir='template',
-) -> IGMSession:
+) -> IGMTemplate:
     outer_frame = inspect.currentframe().f_back
     outer_dir, _ = os.path.split(os.path.abspath(outer_frame.f_code.co_filename))
 
     session_id = get_global(_IGM_SESSION_ID_NAME, default=None)
     path = get_global(_IGM_PATH_NAME, default=outer_dir)
 
-    retval = IGMSession(
+    retval = IGMTemplate(
         title, version, description,
         path, template_dir,
     )
@@ -37,7 +37,7 @@ def igm_setup(
     return retval
 
 
-def load_igm_setup(path: str, setup_filename='meta.py') -> IGMSession:
+def load_igm_setup(path: str, setup_filename='meta.py') -> IGMTemplate:
     if not os.path.exists(path):
         raise FileNotFoundError(path)
 
