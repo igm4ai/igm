@@ -937,7 +937,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+/dist
 wheelhouse/
 downloads/
 eggs/
