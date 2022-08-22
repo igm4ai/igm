@@ -14,7 +14,7 @@ from ..testings import assert_same_path
 class TestTemplateModel:
     def test_igm_template_base(self):
         template = IGMTemplate('mt', '0.5.4', 'My Template', os.path.join('test', 'utils'))
-        assert template.title == 'mt'
+        assert template.name == 'mt'
         assert template.version == '0.5.4'
         assert template.description == 'My Template'
 

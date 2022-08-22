@@ -6,9 +6,9 @@ from ..utils import with_pythonpath, normpath
 
 
 class IGMTemplate:
-    def __init__(self, title, version, description,
+    def __init__(self, name, version, description,
                  path, template_dir='template'):
-        self.__title = title
+        self.__name = name
         self.__version = version
         self.__description = description
 
@@ -16,8 +16,8 @@ class IGMTemplate:
         self.__template_dir = template_dir
 
     @property
-    def title(self):
-        return self.__title
+    def name(self):
+        return self.__name
 
     @property
     def version(self):
@@ -44,12 +44,12 @@ class IGMTemplate:
             # noinspection PyShadowingBuiltins
             print = builtins.print
 
-        print(f'{self.__title}, v{self.__version}')
+        print(f'{self.__name}, v{self.__version}')
         print(f'{self.__description}')
         print(f'Located at {self.__path!r}.')
 
     def __repr__(self) -> str:
-        return f'<{type(self).__name__} {self.__title}, v{self.__version}>'
+        return f'<{type(self).__name__} {self.__name}, v{self.__version}>'
 
     @contextmanager
     def _python_path(self):

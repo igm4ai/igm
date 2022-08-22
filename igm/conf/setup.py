@@ -14,7 +14,7 @@ _IGM_PATH_NAME = '__igm_path__'
 
 def igm_setup(
         *,
-        title: str,
+        name: str,
         version: str,
         description: str,
         template_dir='template',
@@ -26,7 +26,7 @@ def igm_setup(
     path = get_global(_IGM_PATH_NAME, default=outer_dir)
 
     retval = IGMTemplate(
-        title, version, description,
+        name, version, description,
         path, template_dir,
     )
     if session_id is not None:
