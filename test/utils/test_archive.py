@@ -15,8 +15,11 @@ class TestUtilsArchive:
     @pytest.mark.parametrize(
         ['fmt', 'exts'],
         [
-            ('bztar', ['.tar.bz2', '.tbz2']), ('gztar', ['.tar.gz', '.tgz']),
-            ('tar', ['.tar']), ('xztar', ['.tar.xz', '.txz']), ('zip', ['.zip'])
+            ('bztar', ['.tar.bz2', '.tbz2']),
+            ('gztar', ['.tar.gz', '.tgz']),
+            ('tar', ['.tar']),
+            ('xztar', ['.tar.xz', '.txz']),
+            ('zip', ['.zip']),
         ]
     )
     def test_unpack_archive_common(self, fmt, exts):
