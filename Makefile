@@ -2,12 +2,14 @@
 
 PYTHON := $(shell which python)
 
-PROJ_DIR  := .
-DOC_DIR   := ${PROJ_DIR}/docs
-BUILD_DIR := ${PROJ_DIR}/build
-DIST_DIR  := ${PROJ_DIR}/dist
-TEST_DIR  := ${PROJ_DIR}/test
-SRC_DIR   := ${PROJ_DIR}/igm
+PROJ_DIR      := .
+DOC_DIR       := ${PROJ_DIR}/docs
+BUILD_DIR     := ${PROJ_DIR}/build
+DIST_DIR      := ${PROJ_DIR}/dist
+TEST_DIR      := ${PROJ_DIR}/test
+TESTFILE_DIR  := ${TEST_DIR}/testfile
+SRC_DIR       := ${PROJ_DIR}/igm
+TEMPLATES_DIR := ${PROJ_DIR}/templates
 
 RANGE_DIR      ?= .
 RANGE_TEST_DIR := ${TEST_DIR}/${RANGE_DIR}
@@ -34,3 +36,14 @@ docs:
 	$(MAKE) -C "${DOC_DIR}" build
 pdocs:
 	$(MAKE) -C "${DOC_DIR}" prod
+
+# build test files
+testfile:
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/7z_template-simple.7z) && \
+		7z a -t7z $(abspath ${TESTFILE_DIR}/7z_template-simple.7z) * && \
+		cd ../..
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/rar_template-simple.rar) && \
+		rar a $(abspath ${TESTFILE_DIR}/rar_template-simple.rar) * && \
+		cd ../..

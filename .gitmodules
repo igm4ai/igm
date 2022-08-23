@@ -1,3 +1,6 @@
 [submodule "templates/simple"]
 	path = templates/simple
 	url = git@github.com:igm4ai/template-simple.git
+[submodule "test/testfile"]
+	path = test/testfile
+	url = git@github.com:igm4ai/igm-testfile.git

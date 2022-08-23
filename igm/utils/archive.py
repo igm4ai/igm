@@ -3,7 +3,7 @@ from typing import Optional
 
 try:
     import rarfile
-except ImportError:
+except ImportError:  # pragma: no cover
     rarfile = None
 
 
@@ -22,7 +22,7 @@ def _rar_extract(filename, extract_dir):
 
 try:
     import py7zr
-except ImportError:
+except ImportError:  # pragma: no cover
     py7zr = None
 
 
@@ -41,14 +41,6 @@ def _7z_extract(filename, extract_dir):
 
 shutil.register_unpack_format('rar', ['.rar'], _rar_extract, [], 'WinRAR file')
 shutil.register_unpack_format('7z', ['.7z'], _7z_extract, [], '7z file')
-
-
-def _get_format_by_extension(ext: str) -> Optional[str]:
-    for name, exts, desc in shutil.get_unpack_formats():
-        if ext in exts:
-            return name
-
-    return None
 
 
 def unpack_archive(filename, dstpath, fmt: Optional[str] = None):
