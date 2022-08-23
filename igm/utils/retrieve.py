@@ -42,7 +42,7 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
         return retrieve_from_vcs(srcpos, dstpath)
     else:
         link = Link(srcpos)
-        if link.scheme:  # is a url
+        if not link.is_file and link.scheme:  # is a url
             if link.scheme in DOWNLOADABLE_SCHEMES:  # is http/https/ftp url
                 filename = link.filename
                 with tempfile.TemporaryDirectory() as tdir:
