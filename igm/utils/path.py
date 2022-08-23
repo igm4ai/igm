@@ -1,6 +1,16 @@
 import os.path
 
 
+def get_file_ext(file: str) -> str:
+    """
+
+    :param file:
+    :return:
+    """
+    _, ext = os.path.splitext(os.path.normcase(file))
+    return ext
+
+
 def normpath(path: str, *paths: str) -> str:
     """
     Overview:

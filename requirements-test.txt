@@ -13,3 +13,5 @@ easydict>=1.7,<2
 testtools>=2
 numpy>=1.19,<2
 where>=1.0.2
+rarfile>=3
+py7zr>=0.19
