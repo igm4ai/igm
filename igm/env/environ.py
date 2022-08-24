@@ -19,3 +19,9 @@ class Env(Mapping):
 
     def __iter__(self) -> Iterator[str]:
         yield from os.environ
+
+    def __str__(self) -> str:
+        return str(os.environ)
+
+
+env = Env()
