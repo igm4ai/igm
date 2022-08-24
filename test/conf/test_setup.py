@@ -29,3 +29,11 @@ class TestDistSetup:
         assert template.name == 'simple'
         assert template.version == '0.0.1'
         assert template.description == 'This is a simplest IGM template'
+
+    def test_load_igm_setup_download(self):
+        template = load_igm_setup('https://codeload.github.com/igm4ai/template-simple/zip/refs/heads/main',
+                                  'template-simple-main')
+        assert isinstance(template, IGMTemplate)
+        assert template.name == 'simple'
+        assert template.version == '0.0.1'
+        assert template.description == 'This is a simplest IGM template'

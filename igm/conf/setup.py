@@ -37,9 +37,9 @@ def igm_setup(
     return retval
 
 
-def load_igm_setup(template: str, setup_filename='meta.py') -> IGMTemplate:
+def load_igm_setup(template: str, *segment: str, setup_filename='meta.py') -> IGMTemplate:
     with retrieve(template) as path:
-        path = os.path.abspath(path)
+        path = os.path.abspath(os.path.join(path, *segment))
         if os.path.isfile(path):
             (pathdir, _), pathfile = os.path.split(path), path
         else:
