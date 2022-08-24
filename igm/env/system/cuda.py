@@ -34,5 +34,11 @@ class CUDA(MappingBasedModel):
             assert self.get("attached_gpus", 0) == len(gpu_list)
             return GPUCollection([GPU(item) for item in gpu_list])
 
-    def __repr__(self):
+    def _str_format(self):
         return f'<{type(self).__name__} {self.version}>'
+
+    def __str__(self):
+        return self._str_format()
+
+    def __repr__(self):
+        return self._str_format()
