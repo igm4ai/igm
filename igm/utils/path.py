@@ -13,3 +13,23 @@ def normpath(path: str, *paths: str) -> str:
     return os.path.normcase(os.path.normpath(
         os.path.abspath(os.path.join(path, *paths))
     ))
+
+
+def _samepath(src, dst) -> bool:
+    """
+    Copied from ``shutils._samepath``.
+
+    :param src: Source path.
+    :param dst: Destination path.
+    :return: Same or not.
+    """
+    # Macintosh, Unix.
+    if hasattr(os.path, 'samefile'):
+        try:
+            return os.path.samefile(src, dst)
+        except OSError:
+            return False
+
+    # All other platforms: check for same pathname.
+    return (os.path.normcase(os.path.abspath(src)) ==
+            os.path.normcase(os.path.abspath(dst)))

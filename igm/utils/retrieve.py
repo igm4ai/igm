@@ -11,6 +11,7 @@ from hbutils.system import copy
 from pip._internal.models.link import Link
 
 from .archive import unpack_archive
+from .path import _samepath
 from .vcs import is_vcs_url, retrieve_from_vcs
 
 
@@ -44,7 +45,8 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
                     unpack_archive(local_filename, dstpath, archive_format)
                     return dstpath
                 else:  # just copy the file
-                    copy(local_filename, dstpath)
+                    if not _samepath(local_filename, dstpath):
+                        copy(local_filename, dstpath)
                     return dstpath
 
         else:  # is a local file
@@ -54,7 +56,8 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
                 unpack_archive(srcpos, dstpath, archive_format)
                 return dstpath
             else:  # just copy the file
-                copy(srcpos, dstpath)
+                if not _samepath(srcpos, dstpath):
+                    copy(srcpos, dstpath)
                 return dstpath
 
 
