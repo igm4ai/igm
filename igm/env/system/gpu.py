@@ -41,5 +41,11 @@ class GPU(MappingBasedModel):
     def memory(self) -> FBMemoryUsage:
         return FBMemoryUsage(self["fb_memory_usage"])
 
-    def __repr__(self):
+    def _str_format(self):
         return f'<{type(self).__name__} {self.product_name}, {self.memory.total}>'
+
+    def __str__(self):
+        return self._str_format()
+
+    def __repr__(self):
+        return self._str_format()

@@ -12,7 +12,7 @@ class NvidiaDriverVersion(VersionInfo):
 
 class CUDA(MappingBasedModel):
     def __init__(self, nvidia_data: dict):
-        MappingBasedModel.__init__(self, nvidia_data)
+        MappingBasedModel.__init__(self, nvidia_data["nvidia_smi_log"])
 
     @property
     def version(self) -> CUDAVersion:
@@ -28,10 +28,10 @@ class CUDA(MappingBasedModel):
         if not gpu_list:
             return GPUCollection([])
         elif isinstance(gpu_list, dict):
-            assert self.get("attached_gpus", 0) == 1
+            assert int(self.get("attached_gpus", 0)) == 1
             return GPUCollection([GPU(gpu_list)])
         else:
-            assert self.get("attached_gpus", 0) == len(gpu_list)
+            assert int(self.get("attached_gpus", 0)) == len(gpu_list)
             return GPUCollection([GPU(item) for item in gpu_list])
 
     def _str_format(self):
