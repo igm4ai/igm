@@ -1,6 +1,5 @@
 import os.path
 import pathlib
-import shutil
 
 import pytest
 from hbutils.testing import isolated_directory
@@ -11,65 +10,44 @@ from test.testings import GITHUB_HOST
 
 @pytest.mark.unittest
 class TestUtilsRetrieve:
-    @pytest.mark.parametrize(['fmt'], [('7z',), ('rar',)])
-    def test_retrieve_7z_rar(self, fmt):
-        with retrieve(f'test/testfile/{fmt}_template-simple.{fmt}') as fd:
+    @pytest.mark.parametrize(
+        ['fmt', 'ext'],
+        [
+            ('7z', '.7z'),
+            ('rar', '.rar'),
+            ('bztar', '.tar.bz2'),
+            ('gztar', '.tar.gz'),
+            ('tar', '.tar'),
+            ('xztar', '.tar.xz'),
+            ('zip', '.zip'),
+        ]
+    )
+    def test_retrieve_local_archive(self, fmt, ext):
+        with retrieve(f'test/testfile/{fmt}_template-simple{ext}') as fd:
             assert os.path.exists(fd)
             assert os.path.isdir(fd)
             assert os.path.exists(os.path.join(fd, 'meta.py'))
             assert os.path.exists(os.path.join(fd, 'README.md'))
             assert 'igm.conf' in pathlib.Path(os.path.join(fd, 'meta.py')).read_text()
 
-    @pytest.mark.parametrize(['fmt'], [('7z',), ('rar',)])
-    def test_retrieve_not_unpack_7z_rar(self, fmt):
-        with retrieve(f'test/testfile/{fmt}_template-simple.{fmt}', auto_unpack=False) as fd:
+    @pytest.mark.parametrize(
+        ['fmt', 'ext'],
+        [
+            ('7z', '.7z'),
+            ('rar', '.rar'),
+            ('bztar', '.tar.bz2'),
+            ('gztar', '.tar.gz'),
+            ('tar', '.tar'),
+            ('xztar', '.tar.xz'),
+            ('zip', '.zip'),
+        ]
+    )
+    def test_retrieve_local_archive_not_unpack(self, fmt, ext):
+        with retrieve(f'test/testfile/{fmt}_template-simple{ext}', auto_unpack=False) as fd:
             assert os.path.exists(fd)
             assert os.path.isfile(fd)
             _, filename = os.path.split(fd)
-            assert filename == f'{fmt}_template-simple.{fmt}'
-
-    @pytest.mark.parametrize(
-        ['fmt', 'exts'],
-        [
-            ('bztar', ['.tar.bz2', '.tbz2']),
-            ('gztar', ['.tar.gz', '.tgz']),
-            ('tar', ['.tar']),
-            ('xztar', ['.tar.xz', '.txz']),
-            ('zip', ['.zip']),
-        ]
-    )
-    def test_retrieve_common_archive(self, fmt, exts):
-        with isolated_directory({'template-simple': 'templates/simple'}):
-            product = shutil.make_archive('template-simple-zip', fmt, 'template-simple')
-
-            with retrieve(product) as fd:
-                assert os.path.exists(fd)
-                assert os.path.isdir(fd)
-                assert os.path.exists(os.path.join(fd, 'meta.py'))
-                assert os.path.exists(os.path.join(fd, 'README.md'))
-                assert pathlib.Path('template-simple/meta.py').read_text() == \
-                       pathlib.Path(os.path.join(fd, 'meta.py')).read_text()
-
-    @pytest.mark.parametrize(
-        ['fmt', 'exts'],
-        [
-            ('bztar', ['.tar.bz2', '.tbz2']),
-            ('gztar', ['.tar.gz', '.tgz']),
-            ('tar', ['.tar']),
-            ('xztar', ['.tar.xz', '.txz']),
-            ('zip', ['.zip']),
-        ]
-    )
-    def test_retrieve_common_archive_not_unpack(self, fmt, exts):
-        with isolated_directory({'template-simple': 'templates/simple'}):
-            product = shutil.make_archive('template-simple-zip', fmt, 'template-simple')
-            _, pfilename = os.path.split(product)
-
-            with retrieve(product, auto_unpack=False) as fd:
-                assert os.path.exists(fd)
-                assert os.path.isfile(fd)
-                _, filename = os.path.split(fd)
-                assert filename == pfilename
+            assert filename == f'{fmt}_template-simple{ext}'
 
     def test_retrieve_path(self):
         with isolated_directory({'template-simple': 'templates/simple'}):
@@ -79,25 +57,47 @@ class TestUtilsRetrieve:
                 assert os.path.exists(os.path.join(fd, 'meta.py'))
                 assert os.path.exists(os.path.join(fd, 'README.md'))
 
-    @pytest.mark.parametrize(['fmt'], [('7z',), ('rar',)])
-    def test_download_file(self, fmt):
+    @pytest.mark.parametrize(
+        ['fmt', 'ext'],
+        [
+            ('7z', '.7z'),
+            ('rar', '.rar'),
+            ('bztar', '.tar.bz2'),
+            ('gztar', '.tar.gz'),
+            ('tar', '.tar'),
+            ('xztar', '.tar.xz'),
+            ('zip', '.zip'),
+        ]
+    )
+    def test_download_file(self, fmt, ext):
         with isolated_directory():
-            with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple.{fmt}') as fd:
+            with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple{ext}') as fd:
                 assert os.path.exists(fd)
                 assert os.path.isdir(fd)
                 assert os.path.exists(os.path.join(fd, 'meta.py'))
                 assert os.path.exists(os.path.join(fd, 'README.md'))
                 assert 'igm.conf' in pathlib.Path(os.path.join(fd, 'meta.py')).read_text()
 
-    @pytest.mark.parametrize(['fmt'], [('7z',), ('rar',)])
-    def test_download_file_not_unpack(self, fmt):
+    @pytest.mark.parametrize(
+        ['fmt', 'ext'],
+        [
+            ('7z', '.7z'),
+            ('rar', '.rar'),
+            ('bztar', '.tar.bz2'),
+            ('gztar', '.tar.gz'),
+            ('tar', '.tar'),
+            ('xztar', '.tar.xz'),
+            ('zip', '.zip'),
+        ]
+    )
+    def test_download_file_not_unpack(self, fmt, ext):
         with isolated_directory():
-            with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple.{fmt}',
+            with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple{ext}',
                           auto_unpack=False) as fd:
                 assert os.path.exists(fd)
                 assert os.path.isfile(fd)
                 _, filename = os.path.split(fd)
-                assert filename == f'{fmt}_template-simple.{fmt}'
+                assert filename == f'{fmt}_template-simple{ext}'
 
     def test_download_file_with_content_type(self):
         with isolated_directory():

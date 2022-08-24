@@ -47,3 +47,23 @@ testfile:
 		rm -rf $(abspath ${TESTFILE_DIR}/rar_template-simple.rar) && \
 		rar a $(abspath ${TESTFILE_DIR}/rar_template-simple.rar) * && \
 		cd ../..
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/zip_template-simple.zip) && \
+		zip -r $(abspath ${TESTFILE_DIR}/zip_template-simple.zip) * && \
+		cd ../..
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/gztar_template-simple.tar.gz) && \
+		tar -zcvf $(abspath ${TESTFILE_DIR}/gztar_template-simple.tar.gz) * && \
+		cd ../..
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/bztar_template-simple.tar.bz2) && \
+		tar -cvjSf $(abspath ${TESTFILE_DIR}/bztar_template-simple.tar.bz2) * && \
+		cd ../..
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/xztar_template-simple.tar.xz) && \
+		tar -cvJf $(abspath ${TESTFILE_DIR}/xztar_template-simple.tar.xz) * && \
+		cd ../..
+	cd ${TEMPLATES_DIR}/simple && \
+		rm -rf $(abspath ${TESTFILE_DIR}/tar_template-simple.tar) && \
+		tar -cvf $(abspath ${TESTFILE_DIR}/tar_template-simple.tar) * && \
+		cd ../..
