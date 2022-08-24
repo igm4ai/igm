@@ -2,12 +2,12 @@ import pytest
 
 from igm.conf import load_igm_setup
 from igm.template import IGMTemplate
-from test.testings import TEMPLATE_SIMPLE, assert_same_path, TEMPLATE_SIMPLE_FILE
+from test.testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_FILE, GITHUB_HOST
 
 
 @pytest.mark.unittest
 class TestDistSetup:
-    def test_load_igm_setup(self):
+    def test_load_igm_setup_local(self):
         with pytest.raises(FileNotFoundError):
             load_igm_setup('/a/path/not/exist')
 
@@ -16,11 +16,16 @@ class TestDistSetup:
         assert template.name == 'simple'
         assert template.version == '0.0.1'
         assert template.description == 'This is a simplest IGM template'
-        assert_same_path(template.path, TEMPLATE_SIMPLE)
 
         template = load_igm_setup(TEMPLATE_SIMPLE_FILE)
         assert isinstance(template, IGMTemplate)
         assert template.name == 'simple'
         assert template.version == '0.0.1'
         assert template.description == 'This is a simplest IGM template'
-        assert_same_path(template.path, TEMPLATE_SIMPLE)
+
+    def test_load_igm_setup_github(self):
+        template = load_igm_setup(f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git')
+        assert isinstance(template, IGMTemplate)
+        assert template.name == 'simple'
+        assert template.version == '0.0.1'
+        assert template.description == 'This is a simplest IGM template'
