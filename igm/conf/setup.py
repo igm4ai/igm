@@ -1,6 +1,7 @@
+import contextlib
 import inspect
 import os
-from typing import Dict
+from typing import Dict, ContextManager
 
 from hbutils.random import random_sha1_with_timestamp
 
@@ -37,7 +38,8 @@ def igm_setup(
     return retval
 
 
-def load_igm_setup(template: str, *segment: str, setup_filename='meta.py') -> IGMTemplate:
+@contextlib.contextmanager
+def load_igm_setup(template: str, *segment: str, setup_filename='meta.py') -> ContextManager[IGMTemplate]:
     with retrieve(template) as path:
         path = os.path.abspath(os.path.join(path, *segment))
         if os.path.isfile(path):
@@ -54,4 +56,4 @@ def load_igm_setup(template: str, *segment: str, setup_filename='meta.py') -> IG
                 })
 
         assert session_id in _IGM_SESSIONS, f'Session {session_id!r} not found.'
-        return _IGM_SESSIONS[session_id]
+        yield _IGM_SESSIONS[session_id]
