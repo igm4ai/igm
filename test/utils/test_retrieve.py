@@ -119,6 +119,6 @@ class TestUtilsRetrieve:
 
     def test_invalid_scheme(self):
         with isolated_directory():
-            with pytest.raises(FileNotFoundError):
+            with pytest.raises((FileNotFoundError, OSError)):
                 with retrieve(f'ffffffff://{GITHUB_HOST}/igm4ai/template-simple.git'):
                     pytest.fail('Should not reach here.')
