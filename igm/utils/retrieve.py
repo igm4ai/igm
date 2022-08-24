@@ -3,16 +3,93 @@ import mimetypes
 import os
 import shutil
 import tempfile
+import warnings
+import weakref
 from typing import Optional
 from urllib.request import urlretrieve
 
 import validators
 from hbutils.system import copy
+from hbutils.testing import vpython
 from pip._internal.models.link import Link
 
 from .archive import unpack_archive
 from .path import _samepath
 from .vcs import is_vcs_url, retrieve_from_vcs
+
+if vpython >= '3.8':
+    _TemporaryDirectory = tempfile.TemporaryDirectory
+else:
+    class _TemporaryDirectory(object):  # pragma: no cover
+        """
+        THIS CLASS IS COPIED FROM PYTHON3.8's TEMPFILE.
+        Because PermissionError will be raised when use native TemporaryDirectory on Windows python3.7.
+        This class should be removed when python3.7 is no longer supported.
+
+        Create and return a temporary directory.  This has the same
+        behavior as mkdtemp but can be used as a context manager.  For
+        example:
+
+            with TemporaryDirectory() as tmpdir:
+                ...
+
+        Upon exiting the context, the directory and everything contained
+        in it are removed.
+        """
+
+        def __init__(self, suffix=None, prefix=None, dir=None):
+            self.name = tempfile.mkdtemp(suffix, prefix, dir)
+            self._finalizer = weakref.finalize(
+                self, self._cleanup, self.name,
+                warn_message="Implicitly cleaning up {!r}".format(self))
+
+        @classmethod
+        def _rmtree(cls, name):
+            def onerror(func, path, exc_info):
+                if issubclass(exc_info[0], PermissionError):
+                    def resetperms(path):
+                        try:
+                            os.chflags(path, 0)
+                        except AttributeError:
+                            pass
+                        os.chmod(path, 0o700)
+
+                    try:
+                        if path != name:
+                            resetperms(os.path.dirname(path))
+                        resetperms(path)
+
+                        try:
+                            os.unlink(path)
+                        # PermissionError is raised on FreeBSD for directories
+                        except (IsADirectoryError, PermissionError):
+                            cls._rmtree(path)
+                    except FileNotFoundError:
+                        pass
+                elif issubclass(exc_info[0], FileNotFoundError):
+                    pass
+                else:
+                    raise
+
+            shutil.rmtree(name, onerror=onerror)
+
+        @classmethod
+        def _cleanup(cls, name, warn_message):
+            cls._rmtree(name)
+            warnings.warn(warn_message, ResourceWarning)
+
+        def __repr__(self):
+            return "<{} {!r}>".format(self.__class__.__name__, self.name)
+
+        def __enter__(self):
+            return self.name
+
+        def __exit__(self, exc, value, tb):
+            self.cleanup()
+
+        def cleanup(self):
+            if self._finalizer.detach():
+                self._rmtree(self.name)
 
 
 def _guess_extract_type(filename: str, content: Optional[str] = None) -> Optional[str]:
@@ -63,7 +140,7 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
 
 @contextlib.contextmanager
 def retrieve(srcpos, auto_unpack: bool = True) -> str:
-    with tempfile.TemporaryDirectory() as td:
+    with _TemporaryDirectory() as td:
         target = os.path.join(td, Link(srcpos).filename)
         downloaded = retrieve_to_local(srcpos, target, auto_unpack=auto_unpack)
         yield os.path.join(downloaded)
