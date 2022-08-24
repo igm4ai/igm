@@ -6,7 +6,6 @@ import pytest
 from hbutils.testing import isolated_directory
 
 from igm.utils import retrieve
-from igm.utils.retrieve import InvalidURLScheme
 from test.testings import GITHUB_HOST
 
 
@@ -120,6 +119,6 @@ class TestUtilsRetrieve:
 
     def test_invalid_scheme(self):
         with isolated_directory():
-            with pytest.raises(InvalidURLScheme):
+            with pytest.raises(FileNotFoundError):
                 with retrieve(f'ffffffff://{GITHUB_HOST}/igm4ai/template-simple.git'):
                     pytest.fail('Should not reach here.')

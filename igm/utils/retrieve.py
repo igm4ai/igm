@@ -6,6 +6,7 @@ import tempfile
 from typing import Optional
 from urllib.request import urlretrieve
 
+import validators
 from hbutils.system import copy
 from pip._internal.models.link import Link
 
@@ -30,33 +31,21 @@ def _guess_extract_type(filename: str, content: Optional[str] = None) -> Optiona
     return content
 
 
-DOWNLOADABLE_SCHEMES = ['http', 'https', 'ftp']
-
-
-class InvalidURLScheme(Exception):
-    pass
-
-
 def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
     if is_vcs_url(srcpos):
         return retrieve_from_vcs(srcpos, dstpath)
     else:
-        link = Link(srcpos)
-        if not link.is_file and link.scheme:  # is a url
-            if link.scheme in DOWNLOADABLE_SCHEMES:  # is http/https/ftp url
-                filename = link.filename
-                with tempfile.TemporaryDirectory() as tdir:
-                    local_filename, headers = urlretrieve(srcpos, os.path.join(tdir, filename))
-                    archive_format = _guess_extract_type(filename, headers.get('Content-Type', None))
-                    if auto_unpack and archive_format:  # unpack archive file to directory
-                        unpack_archive(local_filename, dstpath, archive_format)
-                        return dstpath
-                    else:  # just copy the file
-                        copy(local_filename, dstpath)
-                        return dstpath
-
-            else:  # unknown url
-                raise InvalidURLScheme(link)
+        if validators.url(srcpos):
+            filename = Link(srcpos).filename
+            with tempfile.TemporaryDirectory() as tdir:
+                local_filename, headers = urlretrieve(srcpos, os.path.join(tdir, filename))
+                archive_format = _guess_extract_type(filename, headers.get('Content-Type', None))
+                if auto_unpack and archive_format:  # unpack archive file to directory
+                    unpack_archive(local_filename, dstpath, archive_format)
+                    return dstpath
+                else:  # just copy the file
+                    copy(local_filename, dstpath)
+                    return dstpath
 
         else:  # is a local file
             filedir, filename = os.path.split(dstpath)
