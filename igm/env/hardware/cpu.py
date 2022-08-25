@@ -31,7 +31,7 @@ def _get_cpu_info(ttl_hash):
 
     freq: List = psutil.cpu_freq(percpu=True)
     if len(freq) == 1 and cnt > 1:
-        freq = [freq[0] for _ in cnt]
+        freq = [freq[0] for _ in range(cnt)]
     assert cnt == len(freq), \
         f'{plural_word(cnt, "cpu")} expected, but {plural_word(len(freq), "frequency")} found.'
 
