@@ -24,7 +24,7 @@ def mem_actual():
 
 @pytest.fixture()
 def mem_0():
-    return MemoryStatus(0, 0)
+    return MemoryStatus(0, 0, 0, 0)
 
 
 @pytest.fixture()
@@ -34,7 +34,7 @@ def mem_avail():
 
 @pytest.mark.unittest
 class TestModelMemory:
-    def test_common(self, mem_724, mem_actual, mem_avail):
+    def test_common(self, mem_724, mem_actual, mem_avail, mem_0):
         assert mem_724.total.bytes == 7516192768
         assert mem_724.free.bytes == 5116192768
         assert mem_724.used.bytes == 2400000000
@@ -50,7 +50,12 @@ class TestModelMemory:
         assert mem_avail.used.bytes == 2400000000
         assert mem_avail.avail.bytes == 5368709120
 
-    def test_percentage(self, mem_724, mem_actual, mem_avail):
+        assert mem_0.total.bytes == 0
+        assert mem_0.free.bytes == 0
+        assert mem_0.used.bytes == 0
+        assert mem_0.avail.bytes == 0
+
+    def test_percentage(self, mem_724, mem_actual, mem_avail, mem_0):
         assert mem_724.free_percentage.percentage == pytest.approx(68.06894029889789)
         assert mem_724.used_percentage.percentage == pytest.approx(31.93105970110212)
         assert mem_724.avail_percentage is None
@@ -62,6 +67,10 @@ class TestModelMemory:
         assert mem_avail.free_percentage.percentage == pytest.approx(42.57474626813616)
         assert mem_avail.used_percentage.percentage == pytest.approx(31.93105970110212)
         assert mem_avail.avail_percentage.percentage == pytest.approx(71.42857142857143)
+
+        assert mem_0.free_percentage is None
+        assert mem_0.used_percentage is None
+        assert mem_0.avail_percentage is None
 
     def test_repr(self, mem_724, mem_actual, mem_0, mem_avail):
         assert repr(mem_724) == '<MemoryStatus total: 7.000 GiB, used: 2.235 GiB (31.93%), free: 4.765 GiB (68.07%)>'

@@ -2,11 +2,12 @@ import os
 from unittest import skipUnless
 from unittest.mock import patch, MagicMock
 
+import psutil
 import pytest
 from hbutils.system import which
 
 from igm.env import sys
-from ..testings import ONE_GPU_1_DATA, CPU_INFO_1, CPU_INFO_100
+from ..testings import ONE_GPU_1_DATA, CPU_INFO_1, CPU_INFO_100, MEMORY_INFO_100
 
 
 @pytest.mark.unittest
@@ -70,3 +71,32 @@ class TestEnvSystem:
     def test_cpu_actual(self):
         assert sys.cpu
         assert sys.cpu.num == os.cpu_count()
+
+    @patch('igm.env.system.get_memory_info', MagicMock(return_value=MEMORY_INFO_100))
+    def test_memory(self):
+        assert sys.memory
+        assert sys.memory.total == 1013991469056
+        assert sys.memory.used == 30801195008
+        assert sys.memory.free == 812224126976
+        assert sys.memory.avail == 977440014336
+
+    @patch('igm.env.system.get_memory_info', MagicMock(return_value=MEMORY_INFO_100))
+    def test_swap(self):
+        assert not sys.swap
+        assert sys.swap.total == 0
+        assert sys.swap.used == 0
+        assert sys.swap.free == 0
+        assert sys.swap.avail is None
+
+    def test_memory_actual(self):
+        assert sys.memory
+        assert sys.memory.total == psutil.virtual_memory().total
+
+    @skipUnless(psutil.swap_memory().total, 'swap memory required')
+    def test_swap_actual(self):
+        assert sys.swap
+        assert sys.swap.total == psutil.swap_memory().total
+
+    @skipUnless(not psutil.swap_memory().total, 'no swap memory required')
+    def test_no_swap_actual(self):
+        assert not sys.swap

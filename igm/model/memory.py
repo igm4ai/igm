@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 from .percentage import Percentage
@@ -37,12 +38,26 @@ class MemoryStatus:
         return self.__free
 
     @property
-    def used_percentage(self) -> UsedPercentage:
-        return UsedPercentage(self.used.bytes / self.total.bytes)
+    def used_percentage(self) -> Optional[UsedPercentage]:
+        try:
+            ratio = self.used.bytes / self.total.bytes
+            if math.isnan(ratio):
+                raise ZeroDivisionError
+        except ZeroDivisionError:
+            return None
+        else:
+            return UsedPercentage(ratio)
 
     @property
-    def free_percentage(self) -> FreePercentage:
-        return FreePercentage(self.free.bytes / self.total.bytes)
+    def free_percentage(self) -> Optional[FreePercentage]:
+        try:
+            ratio = self.free.bytes / self.total.bytes
+            if math.isnan(ratio):
+                raise ZeroDivisionError
+        except ZeroDivisionError:
+            return None
+        else:
+            return FreePercentage(self.free.bytes / self.total.bytes)
 
     @property
     def avail(self) -> Optional[SizeScale]:
@@ -50,7 +65,17 @@ class MemoryStatus:
 
     @property
     def avail_percentage(self) -> Optional[AvailPercentage]:
-        return AvailPercentage(self.avail.bytes / self.total.bytes) if self.__avail is not None else None
+        if self.__avail is not None:
+            try:
+                ratio = self.avail.bytes / self.total.bytes
+                if math.isnan(ratio):
+                    raise ZeroDivisionError
+            except ZeroDivisionError:
+                return None
+            else:
+                return AvailPercentage(ratio)
+        else:
+            return None
 
     def __bool__(self):
         return bool(self.total)
