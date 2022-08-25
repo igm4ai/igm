@@ -1,0 +1,52 @@
+import pytest
+
+from igm.env.system import CUDA
+from ...testings import ONE_GPU_1_DATA, ONE_GPU_2_DATA, TWO_GPU_DATA
+
+
+@pytest.fixture()
+def cuda_1gpu_1():
+    return CUDA(ONE_GPU_1_DATA)
+
+
+@pytest.fixture()
+def cuda_1gpu_2():
+    return CUDA(ONE_GPU_2_DATA)
+
+
+@pytest.fixture()
+def cuda_2gpus():
+    return CUDA(TWO_GPU_DATA)
+
+
+@pytest.mark.unittest
+class TestEnvSystemCuda:
+    def test_version(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
+        assert cuda_1gpu_1.version == '11.4'
+        assert cuda_1gpu_2.version == '11.6'
+        assert cuda_2gpus.version == '11.2'
+
+    def test_driver_version(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
+        assert cuda_1gpu_1.driver_version == '470.141.3'
+        assert cuda_1gpu_2.driver_version == '512.92'
+        assert cuda_2gpus.driver_version == '460.32.3'
+
+    def test_gpus_count(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
+        assert cuda_1gpu_1.gpus.num == 1
+        assert cuda_1gpu_2.gpus.num == 1
+        assert cuda_2gpus.gpus.num == 2
+
+    def test_str(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
+        assert str(cuda_1gpu_1) == '<CUDA 11.4, driver: 470.141.3>'
+        assert str(cuda_1gpu_2) == '<CUDA 11.6, driver: 512.92>'
+        assert str(cuda_2gpus) == '<CUDA 11.2, driver: 460.32.3>'
+
+    def test_repr(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
+        assert repr(cuda_1gpu_1) == '<CUDA 11.4, driver: 470.141.3>'
+        assert repr(cuda_1gpu_2) == '<CUDA 11.6, driver: 512.92>'
+        assert repr(cuda_2gpus) == '<CUDA 11.2, driver: 460.32.3>'
+
+    def test_keys(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
+        assert list(cuda_1gpu_1.keys()) == ['timestamp', 'driver_version', 'cuda_version', 'attached_gpus', 'gpu']
+        assert list(cuda_1gpu_2.keys()) == ['timestamp', 'driver_version', 'cuda_version', 'attached_gpus', 'gpu']
+        assert list(cuda_2gpus.keys()) == ['timestamp', 'driver_version', 'cuda_version', 'attached_gpus', 'gpu']

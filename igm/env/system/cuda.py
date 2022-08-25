@@ -1,5 +1,5 @@
 from .gpu import GPU, GPUCollection
-from ...model import VersionInfo, MappingBasedModel
+from ...model import VersionInfo, MappingBasedModel, SequenceBasedModel
 
 
 class CUDAVersion(VersionInfo):
@@ -27,12 +27,14 @@ class CUDA(MappingBasedModel):
         gpu_list = self.get('gpu', None)
         if not gpu_list:
             return GPUCollection([])
-        elif isinstance(gpu_list, dict):
+        elif isinstance(gpu_list, (dict, MappingBasedModel)):
             assert int(self.get("attached_gpus", 0)) == 1
             return GPUCollection([GPU(gpu_list)])
-        else:
+        elif isinstance(gpu_list, (list, tuple, SequenceBasedModel)):
             assert int(self.get("attached_gpus", 0)) == len(gpu_list)
             return GPUCollection([GPU(item) for item in gpu_list])
+        else:
+            raise TypeError(f'Unknown type of gpu value - {gpu_list!r}.')  # pragma: no cover
 
     def _str_format(self):
         return f'<{type(self).__name__} {self.version}, driver: {self.driver_version}>'
