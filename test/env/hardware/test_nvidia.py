@@ -1,6 +1,6 @@
 from shutil import which
 from unittest import skipUnless
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 
@@ -10,7 +10,7 @@ from igm.env.hardware.nvidia import NvidiaSmiNotFound
 
 @pytest.mark.unittest
 class TestEnvHardwareNvidia:
-    @patch('igm.env.hardware.nvidia.NVIDIA_SMI_CMD', None)
+    @patch('igm.env.hardware.nvidia.which', MagicMock(return_value=None))
     def test_get_nvidia_info_not_found(self):
         with pytest.raises(NvidiaSmiNotFound):
             _ = get_nvidia_info()

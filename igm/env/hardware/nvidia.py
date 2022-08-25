@@ -18,16 +18,15 @@ class NvidiaSmiFailed(Exception):
     pass
 
 
-NVIDIA_SMI_CMD = which('nvidia-smi')
-
-
 @lru_cache()
 def _nvidia_smi_info(ttl_hash):
     _ = ttl_hash
-    if not NVIDIA_SMI_CMD:
+
+    nvidia_smi = which('nvidia-smi')
+    if not nvidia_smi:
         raise NvidiaSmiNotFound('nvidia-smi not found in current environment.')
 
-    process = subprocess.Popen([NVIDIA_SMI_CMD, '-x', '-q'], stdout=subprocess.PIPE)
+    process = subprocess.Popen([nvidia_smi, '-x', '-q'], stdout=subprocess.PIPE)
     (stdout, stderr) = process.communicate()
     exit_code = process.wait()
 

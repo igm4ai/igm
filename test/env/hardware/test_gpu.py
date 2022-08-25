@@ -39,21 +39,21 @@ class TestEnvHardwareGpu:
         assert cuda_2gpus.gpus[1].brand == 'Tesla'
 
     def test_gpu_memory(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
-        assert cuda_1gpu_1.gpus[0].memory.total.bytes == 12604932096
-        assert cuda_1gpu_1.gpus[0].memory.used.bytes == 146800640
-        assert cuda_1gpu_1.gpus[0].memory.free.bytes == 12458131456
+        assert cuda_1gpu_1.gpus[0].memory.total == 12604932096
+        assert cuda_1gpu_1.gpus[0].memory.used == 146800640
+        assert cuda_1gpu_1.gpus[0].memory.free == 12458131456
 
-        assert cuda_1gpu_2.gpus[0].memory.total.bytes == 4294967296
-        assert cuda_1gpu_2.gpus[0].memory.used.bytes == 62914560
-        assert cuda_1gpu_2.gpus[0].memory.free.bytes == 4153409536
+        assert cuda_1gpu_2.gpus[0].memory.total == 4294967296
+        assert cuda_1gpu_2.gpus[0].memory.used == 62914560
+        assert cuda_1gpu_2.gpus[0].memory.free == 4153409536
 
-        assert cuda_2gpus.gpus[0].memory.total.bytes == 85197848576
-        assert cuda_2gpus.gpus[0].memory.used.bytes == 3145728
-        assert cuda_2gpus.gpus[0].memory.free.bytes == 85194702848
+        assert cuda_2gpus.gpus[0].memory.total == 85197848576
+        assert cuda_2gpus.gpus[0].memory.used == 3145728
+        assert cuda_2gpus.gpus[0].memory.free == 85194702848
 
-        assert cuda_2gpus.gpus[1].memory.total.bytes == 85197848576
-        assert cuda_2gpus.gpus[1].memory.used.bytes == 3145728
-        assert cuda_2gpus.gpus[1].memory.free.bytes == 85194702848
+        assert cuda_2gpus.gpus[1].memory.total == 85197848576
+        assert cuda_2gpus.gpus[1].memory.used == 3145728
+        assert cuda_2gpus.gpus[1].memory.free == 85194702848
 
     def test_gpu_str(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
         assert str(cuda_1gpu_1.gpus[0]) == '<GPU NVIDIA GeForce RTX 2060, ' \

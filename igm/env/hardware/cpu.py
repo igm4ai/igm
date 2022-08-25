@@ -45,6 +45,9 @@ class CPUUsage(Percentage):
 
 class CPUCollection(GenericCollection):
     def __init__(self, data: dict):
+        assert data['count'] == len(data['cpus']), \
+            f'{plural_word(data["count"], "cpu")} expected in \'count\' field, ' \
+            f'but {plural_word(len(data["cpus"]), "cpu")} found in \'cpus\' field.'
         GenericCollection.__init__(self, [CPU(i, item) for i, item in enumerate(data['cpus'])])
         self.__data = data
 

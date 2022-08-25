@@ -8,6 +8,11 @@ def demo_collection():
     return GenericCollection([2, 3, 5, 7])
 
 
+@pytest.fixture()
+def demo_empty_collection():
+    return GenericCollection([])
+
+
 @pytest.mark.unittest
 class TestModelCollection:
     def test_len(self, demo_collection):
@@ -27,3 +32,7 @@ class TestModelCollection:
 
     def test_repr(self, demo_collection):
         assert repr(demo_collection) == 'GenericCollection([2, 3, 5, 7])'
+
+    def test_bool(self, demo_collection, demo_empty_collection):
+        assert demo_collection
+        assert not demo_empty_collection

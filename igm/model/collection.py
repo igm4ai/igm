@@ -18,5 +18,8 @@ class GenericCollection(Sequence):
     def __len__(self) -> int:
         return len(self.__items)
 
+    def __bool__(self) -> bool:
+        return bool(self.__items)
+
     def __repr__(self):
         return f'{type(self).__name__}({self.__items!r})'
