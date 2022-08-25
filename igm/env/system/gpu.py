@@ -34,15 +34,26 @@ class GPU(MappingBasedModel):
         return self['@id']
 
     @property
-    def product_name(self) -> str:
+    def name(self) -> str:
         return self['product_name']
+
+    @property
+    def brand(self) -> str:
+        return self['product_brand']
 
     @property
     def memory(self) -> FBMemoryUsage:
         return FBMemoryUsage(self["fb_memory_usage"])
 
+    @property
+    def _better_name(self):
+        if not self.brand or self.brand in self.name:
+            return self.name
+        else:
+            return f'{self.brand} {self.name}'
+
     def _str_format(self):
-        return f'<{type(self).__name__} {self.product_name}, {self.memory.total}>'
+        return f'<{type(self).__name__} {self._better_name}, {self.memory.total}>'
 
     def __str__(self):
         return self._str_format()

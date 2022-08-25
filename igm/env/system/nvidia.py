@@ -4,8 +4,8 @@ import time
 import warnings
 from functools import lru_cache
 
-import where
 import xmltodict
+from hbutils.system import which
 
 from .base import RESOURCE_TIMEOUT
 
@@ -18,15 +18,16 @@ class NvidiaSmiFailed(Exception):
     pass
 
 
+NVIDIA_SMI_CMD = which('nvidia-smi')
+
+
 @lru_cache()
 def _nvidia_smi_info(ttl_hash):
     _ = ttl_hash
-
-    nvidia_smi = where.first('nvidia-smi')
-    if not nvidia_smi:
+    if not NVIDIA_SMI_CMD:
         raise NvidiaSmiNotFound('nvidia-smi not found in current environment.')
 
-    process = subprocess.Popen([nvidia_smi, '-x', '-q'], stdout=subprocess.PIPE)
+    process = subprocess.Popen([NVIDIA_SMI_CMD, '-x', '-q'], stdout=subprocess.PIPE)
     (stdout, stderr) = process.communicate()
     exit_code = process.wait()
 

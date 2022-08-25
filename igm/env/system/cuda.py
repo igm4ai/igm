@@ -35,7 +35,7 @@ class CUDA(MappingBasedModel):
             return GPUCollection([GPU(item) for item in gpu_list])
 
     def _str_format(self):
-        return f'<{type(self).__name__} {self.version}>'
+        return f'<{type(self).__name__} {self.version}, driver: {self.driver_version}>'
 
     def __str__(self):
         return self._str_format()

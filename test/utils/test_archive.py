@@ -1,10 +1,10 @@
 import os.path
 import pathlib
 import shutil
+from unittest.mock import patch
 
 import pytest
 from hbutils.testing import isolated_directory
-from mock import patch
 
 from igm.utils import unpack_archive
 from igm.utils.archive import SevenZipExtractionNotSupported, RARExtractionNotSupported
