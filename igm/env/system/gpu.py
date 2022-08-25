@@ -53,7 +53,7 @@ class GPU(MappingBasedModel):
             return f'{self.brand} {self.name}'
 
     def _str_format(self):
-        return f'<{type(self).__name__} {self._better_name}, {self.memory.total}>'
+        return f'<{type(self).__name__} {self._better_name}, {self.uuid}, {self.memory.total}>'
 
     def __str__(self):
         return self._str_format()
