@@ -7,6 +7,7 @@ from typing import List, Optional
 import cpuinfo
 import psutil
 from hbutils.string import plural_word
+from hbutils.system import is_linux
 
 from .base import RESOURCE_TIMEOUT
 from ...model import GenericCollection, Percentage, MappingBasedModel
@@ -32,8 +33,8 @@ def _get_cpu_info(ttl_hash):
 
     # noinspection PyTypeChecker
     freq: List = psutil.cpu_freq(percpu=True)
-    if len(freq) == 1 and cnt > 1:  # for os except linux
-        freq = [freq[0] for _ in cnt]
+    if not is_linux() and len(freq) == 1 and cnt > 1:  # for os except linux
+        freq = [freq[0] for _ in range(cnt)]
     assert cnt == len(freq), \
         f'{plural_word(cnt, "cpu")} expected, but {plural_word(len(freq), "frequency")} found.'
 
