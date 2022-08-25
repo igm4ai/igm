@@ -10,7 +10,10 @@ from ...model import MemoryStatus
 @lru_cache()
 def _get_memory_info(ttl_hash):
     _ = ttl_hash
-    return psutil.virtual_memory(), psutil.swap_memory()
+    return {
+        'virtual': dict(psutil.virtual_memory()._asdict()),
+        'swap': dict(psutil.swap_memory()._asdict()),
+    }
 
 
 def get_memory_info():
@@ -19,11 +22,11 @@ def get_memory_info():
 
 class VirtualMemory(MemoryStatus):
     def __init__(self, data):
-        virtual, _ = data
-        MemoryStatus.__init__(self, virtual.total, virtual.used, virtual.free, virtual.available)
+        virtual = data['virtual']
+        MemoryStatus.__init__(self, virtual['total'], virtual['used'], virtual['free'], virtual['available'])
 
 
 class SwapMemory(MemoryStatus):
     def __init__(self, data):
-        _, swap = data
-        MemoryStatus.__init__(self, swap.total, swap.used, swap.free)
+        swap = data['swap']
+        MemoryStatus.__init__(self, swap['total'], swap['used'], swap['free'])
