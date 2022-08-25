@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.unittest
-class TestEnvSystemGpu:
+class TestEnvHardwareGpu:
     def test_gpu_collection_len(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
         assert len(cuda_1gpu_1.gpus) == 1
         assert len(cuda_1gpu_2.gpus) == 1

@@ -1,10 +1,10 @@
 import pytest
 
-from igm.env.system import CUDA
+from igm.env.hardware import CUDA
 
 
 @pytest.mark.unittest
-class TestEnvSystemCuda:
+class TestEnvHardwareCuda:
     def test_type(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
         assert isinstance(cuda_1gpu_1, CUDA)
         assert isinstance(cuda_1gpu_2, CUDA)

@@ -1,6 +1,6 @@
 import pytest
 
-from igm.env.system import CUDA
+from igm.env.hardware import CUDA
 from ...testings import ONE_GPU_1_DATA, ONE_GPU_2_DATA, TWO_GPU_DATA
 
 

@@ -4,13 +4,13 @@ from unittest.mock import patch
 
 import pytest
 
-from igm.env.system import get_nvidia_info
-from igm.env.system.nvidia import NvidiaSmiNotFound
+from igm.env.hardware import get_nvidia_info
+from igm.env.hardware.nvidia import NvidiaSmiNotFound
 
 
 @pytest.mark.unittest
-class TestEnvSystemNvidia:
-    @patch('igm.env.system.nvidia.NVIDIA_SMI_CMD', None)
+class TestEnvHardwareNvidia:
+    @patch('igm.env.hardware.nvidia.NVIDIA_SMI_CMD', None)
     def test_get_nvidia_info_not_found(self):
         with pytest.raises(NvidiaSmiNotFound):
             _ = get_nvidia_info()

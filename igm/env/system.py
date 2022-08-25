@@ -1,10 +1,8 @@
 from typing import Optional
 
-from .cpu import get_cpu_info, CPUCollection
-from .cuda import CUDA
-from .gpu import GPUCollection
-from .memory import get_memory_info, SwapMemory, VirtualMemory
-from .nvidia import get_nvidia_info, NvidiaSmiNotFound
+from .hardware import get_cpu_info, CPUCollection, CUDA, GPUCollection, get_memory_info, SwapMemory, VirtualMemory, \
+    get_nvidia_info
+from .hardware.nvidia import NvidiaSmiNotFound
 
 
 class SystemInfo:
