@@ -25,12 +25,14 @@ def _get_cpu_info(ttl_hash):
     info = cpuinfo.get_cpu_info()
     cnt = info['count']
 
+    # noinspection PyTypeChecker
     percents: List[float] = psutil.cpu_percent(percpu=True)
     assert cnt == len(percents), \
         f'{plural_word(cnt, "cpu")} expected, but {plural_word(len(percents), "percentage")} found.'
 
+    # noinspection PyTypeChecker
     freq: List = psutil.cpu_freq(percpu=True)
-    if len(freq) == 1 and cnt > 1:
+    if len(freq) == 1 and cnt > 1:  # for os except linux
         freq = [freq[0] for _ in cnt]
     assert cnt == len(freq), \
         f'{plural_word(cnt, "cpu")} expected, but {plural_word(len(freq), "frequency")} found.'
@@ -105,7 +107,7 @@ class CPUInfo(MappingBasedModel):
     def arch(self) -> Optional['CPUArch']:
         try:
             return CPUArch.loads(self['arch'])
-        except (TypeError, KeyError):
+        except (TypeError, KeyError):  # pragma: no cover
             return None
 
 
@@ -134,9 +136,6 @@ class CPUSet(GenericCollection):
     def frequency(self) -> float:
         return statistics.mean([c['frequency'] for c in self])
 
-    def __str__(self):
-        return GenericCollection.__str__(self)
-
     def __repr__(self):
         return f'<{type(self).__name__} {self.brand}, arch: {self.arch}, ' \
                f'{plural_word(len(self), "cpu")}, usage: {self.usage}, freq: {self.frequency:.2f} MHz>'
@@ -146,7 +145,6 @@ class CPU(MappingBasedModel):
     def __init__(self, id_: int, data: dict):
         MappingBasedModel.__init__(self, data)
         self.__id = id_
-        self.__data = data
 
     @property
     def id(self):
@@ -154,11 +152,11 @@ class CPU(MappingBasedModel):
 
     @property
     def usage(self) -> CPUUsage:
-        return CPUUsage(self.__data['percentage'] / 100)
+        return CPUUsage(self['percentage'] / 100)
 
     @property
     def frequency(self) -> float:
-        return self.__data['frequency']
+        return self['frequency']
 
     def __repr__(self):
         return f'<{type(self).__name__} #{self.__id}, usage: {self.usage}, freq: {self.frequency:.2f} MHz>'
