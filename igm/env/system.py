@@ -1,14 +1,14 @@
 from typing import Optional
 
-from .hardware import get_cpu_info, CPUCollection, CUDA, GPUCollection, get_memory_info, SwapMemory, VirtualMemory, \
+from .hardware import get_cpu_info, CPUSet, CUDA, GPUCollection, get_memory_info, SwapMemory, VirtualMemory, \
     get_nvidia_info
 from .hardware.nvidia import NvidiaSmiNotFound
 
 
 class SystemInfo:
     @property
-    def cpu(self) -> CPUCollection:
-        return CPUCollection(get_cpu_info())
+    def cpu(self) -> CPUSet:
+        return CPUSet(get_cpu_info())
 
     @property
     def memory(self) -> VirtualMemory:
