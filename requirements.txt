@@ -4,3 +4,4 @@ validators>=0.20.0
 psutil>=5.9.0
 xmltodict>=0.13.0
 py-cpuinfo>=8.0.0
+ping3>=4.0.3
