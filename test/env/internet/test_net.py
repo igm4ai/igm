@@ -4,12 +4,15 @@ from unittest import skipUnless
 import pytest
 
 from igm.env.internet import internet
+from igm.env.internet.net import CONNECT_CACHE_TTL
 
 
 # noinspection DuplicatedCode
+
+
 @pytest.mark.unittest
 class TestEnvInternetNet:
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
     def test_internet_actual_has_internet_in_gfw(self):
@@ -45,7 +48,7 @@ class TestEnvInternetNet:
         assert internet('twitter.com').port == 80
         assert repr(internet('twitter.com')) == '<ConnectStatus twitter.com:80, fail>'
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     @skipUnless(os.getenv('NO_GFW'), 'no gfw required')
     def test_internet_actual_has_internet_out_of_gfw(self):

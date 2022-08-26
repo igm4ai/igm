@@ -7,6 +7,7 @@ import pytest
 from hbutils.system import which
 
 from igm.env import sys
+from igm.env.internet.net import CONNECT_CACHE_TTL
 from ..testings import ONE_GPU_1_DATA, CPU_INFO_1, CPU_INFO_100, MEMORY_INFO_100
 
 
@@ -102,7 +103,7 @@ class TestEnvSystem:
     def test_no_swap_actual(self):
         assert not sys.swap
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'sys.internet required')
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
     def test_internet_actual_has_internet_in_gfw(self):
@@ -138,7 +139,7 @@ class TestEnvSystem:
         assert sys.internet('twitter.com').port == 80
         assert repr(sys.internet('twitter.com')) == '<ConnectStatus twitter.com:80, fail>'
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     @skipUnless(os.getenv('NO_GFW'), 'no gfw required')
     def test_internet_actual_has_internet_out_of_gfw(self):

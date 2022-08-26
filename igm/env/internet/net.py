@@ -1,6 +1,6 @@
 import time
 from functools import lru_cache
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Tuple
 
 from .connect import CONNECT_TIMEOUT
 from .connect import try_connect as _origin_try_connect
@@ -15,12 +15,20 @@ BAIDU_HOST = ('baidu.com', 80)
 GITEE_HOST = ('gitee.com', 80)
 
 CONNECT_CACHE_TTL = 5
+CONNECT_MAX_RETRY = 3
+
+
+def _try_connect_it(address: str, port: int, timeout: int) -> Tuple[bool, float]:
+    for i in range(CONNECT_MAX_RETRY):
+        ok, ttl = _origin_try_connect(address, port, timeout)
+        if ok or i == CONNECT_MAX_RETRY - 1:
+            return ok, ttl
 
 
 @lru_cache()
-def _try_connect_once(address: str, port: int, timeout: int, ttl_hash: int):
+def _try_connect_with_hash(address: str, port: int, timeout: int, ttl_hash: int):
     _ = ttl_hash
-    return _origin_try_connect(address, port, timeout)
+    return _try_connect_it(address, port, timeout)
 
 
 class ConnectStatus:
@@ -62,9 +70,9 @@ _ConnectStatusType = TypeVar('_ConnectStatusType', bound=ConnectStatus)
 def _try_connect(address: str, port: int, timeout: int = CONNECT_TIMEOUT,
                  clazz: Type[_ConnectStatusType] = ConnectStatus) -> _ConnectStatusType:
     if CONNECT_CACHE_TTL is not None:
-        ok, ttl = _try_connect_once(address, port, timeout, int(time.time()) // CONNECT_CACHE_TTL)
+        ok, ttl = _try_connect_with_hash(address, port, timeout, int(time.time()) // CONNECT_CACHE_TTL)
     else:
-        ok, ttl = _origin_try_connect(address, port, timeout)  # pragma: no cover
+        ok, ttl = _try_connect_it(address, port, timeout)  # pragma: no cover
 
     return clazz(address, port, ok, ttl)
 

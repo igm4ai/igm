@@ -4,25 +4,26 @@ from unittest import skipUnless
 import pytest
 
 from igm.env.internet import try_connect
+from igm.env.internet.net import CONNECT_CACHE_TTL
 
 
 @pytest.mark.unittest
 class TestEnvInternetConnect:
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_try_connect_actual(self):
         baidu_ok, baidu_ttl = try_connect('baidu.com', 80)
         assert baidu_ok
         assert 0.0 <= baidu_ttl <= 1.0
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
     def test_try_connect_google_actual_in_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)
         assert not google_ok
         assert google_ttl is None
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(os.getenv('NO_GFW'), 'no gfw required')
     def test_try_connect_google_actual_out_of_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)

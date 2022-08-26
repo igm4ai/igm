@@ -4,6 +4,7 @@ from .hardware import get_cpu_info, CPUSet, CUDA, GPUCollection, get_memory_info
     get_nvidia_info
 from .hardware.nvidia import NvidiaSmiNotFound
 from .internet import Internet, internet
+from .os import OS, get_os_info
 
 
 class SystemInfo:
@@ -37,6 +38,10 @@ class SystemInfo:
     @property
     def internet(self) -> Internet:
         return internet
+
+    @property
+    def os(self) -> OS:
+        return OS(get_os_info())
 
 
 sys = SystemInfo()
