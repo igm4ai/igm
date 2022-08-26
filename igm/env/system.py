@@ -3,7 +3,7 @@ from typing import Optional
 from .hardware import get_cpu_info, CPUSet, CUDA, GPUCollection, get_memory_info, SwapMemory, VirtualMemory, \
     get_nvidia_info
 from .hardware.nvidia import NvidiaSmiNotFound
-from .network import Network, network
+from .internet import Internet, internet
 
 
 class SystemInfo:
@@ -35,8 +35,8 @@ class SystemInfo:
             return None
 
     @property
-    def network(self) -> Network:
-        return network
+    def internet(self) -> Internet:
+        return internet
 
 
 sys = SystemInfo()
