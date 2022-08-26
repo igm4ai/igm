@@ -14,7 +14,7 @@ def try_connect(host, port: int, timeout: float = CONNECT_TIMEOUT) -> Tuple[bool
 
     :param host: Host address.
     :param port: Port.
-    :param timeout: Timeout of this connection, default is ``2``.
+    :param timeout: Timeout of this connection, default is ``1``.
     """
     _default_timeout = socket.getdefaulttimeout()
     try:

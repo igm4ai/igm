@@ -6,7 +6,7 @@ from .connect import CONNECT_TIMEOUT
 from .connect import try_connect as _origin_try_connect
 
 DEFAULT_PORT = 80
-GLOBAL_DNS_HOST = ('8.8.4.4', 53)
+GLOBAL_DNS_HOST = ('8.8.4.4', 53)  # not used due to its uncertainty
 
 GOOGLE_HOST = ('google.com', 80)
 GITHUB_HOST = ('github.com', 80)
@@ -14,7 +14,7 @@ GITHUB_HOST = ('github.com', 80)
 BAIDU_HOST = ('baidu.com', 80)
 GITEE_HOST = ('gitee.com', 80)
 
-PING_MIN_TIMEOUT = 5
+CONNECT_CACHE_TTL = 5
 
 
 @lru_cache()
@@ -61,12 +61,9 @@ _ConnectStatusType = TypeVar('_ConnectStatusType', bound=ConnectStatus)
 
 def _try_connect(address: str, port: int, timeout: int = CONNECT_TIMEOUT,
                  clazz: Type[_ConnectStatusType] = ConnectStatus) -> _ConnectStatusType:
-    ok, ttl = _try_connect_once(address, port, timeout, int(time.time() // PING_MIN_TIMEOUT))
+    ttl_hash = int(time.time() // CONNECT_CACHE_TTL) if CONNECT_CACHE_TTL is not None else time.time()
+    ok, ttl = _try_connect_once(address, port, timeout, ttl_hash)
     return clazz(address, port, ok, ttl)
-
-
-class GlobalDNSConnect(ConnectStatus):
-    pass
 
 
 class GoogleConnect(ConnectStatus):
@@ -90,10 +87,6 @@ class Internet:
         return _try_connect(address, port, timeout=timeout)
 
     @property
-    def dns(self) -> GlobalDNSConnect:
-        return _try_connect(*GLOBAL_DNS_HOST, clazz=GlobalDNSConnect)
-
-    @property
     def google(self) -> GoogleConnect:
         return _try_connect(*GOOGLE_HOST, clazz=GoogleConnect)
 
@@ -114,7 +107,7 @@ class Internet:
 
     @property
     def has_internet(self) -> bool:
-        return bool(self.dns)
+        return bool(self.baidu)
 
     @property
     def has_gfw(self) -> bool:
