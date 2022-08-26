@@ -19,14 +19,14 @@ class TestEnvInternetConnect:
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
     def test_try_connect_google_actual_in_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)
-        assert not google_ttl
+        assert not google_ok
         assert google_ttl is None
 
     @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @skipUnless(os.getenv('NO_GFW'), 'no gfw required')
     def test_try_connect_google_actual_out_of_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)
-        assert google_ttl
+        assert google_ok
         assert 0.0 <= google_ttl <= 1.0
 
     def test_try_connect_no_network(self, no_network):
@@ -39,7 +39,7 @@ class TestEnvInternetConnect:
         assert gitee_ttl is None
 
         google_ok, google_ttl = try_connect('google.com', 80)
-        assert not google_ttl
+        assert not google_ok
         assert google_ttl is None
 
     def test_try_connect_network_in_gfw(self, network_in_gfw):
@@ -52,7 +52,7 @@ class TestEnvInternetConnect:
         assert 0.0 <= gitee_ttl <= 1.0
 
         google_ok, google_ttl = try_connect('google.com', 80)
-        assert not google_ttl
+        assert not google_ok
         assert google_ttl is None
 
     def test_try_connect_network_out_of_gfw(self, network_out_of_gfw):
@@ -65,5 +65,5 @@ class TestEnvInternetConnect:
         assert 0.0 <= gitee_ttl <= 1.0
 
         google_ok, google_ttl = try_connect('google.com', 80)
-        assert google_ttl
+        assert google_ok
         assert 0.0 <= google_ttl <= 1.0
