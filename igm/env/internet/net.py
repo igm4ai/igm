@@ -61,8 +61,11 @@ _ConnectStatusType = TypeVar('_ConnectStatusType', bound=ConnectStatus)
 
 def _try_connect(address: str, port: int, timeout: int = CONNECT_TIMEOUT,
                  clazz: Type[_ConnectStatusType] = ConnectStatus) -> _ConnectStatusType:
-    ttl_hash = int(time.time() // CONNECT_CACHE_TTL) if CONNECT_CACHE_TTL is not None else time.time()
-    ok, ttl = _try_connect_once(address, port, timeout, ttl_hash)
+    if CONNECT_CACHE_TTL is not None:
+        ok, ttl = _try_connect_once(address, port, timeout, int(time.time()) // CONNECT_CACHE_TTL)
+    else:
+        ok, ttl = _origin_try_connect(address, port, timeout)  # pragma: no cover
+
     return clazz(address, port, ok, ttl)
 
 
