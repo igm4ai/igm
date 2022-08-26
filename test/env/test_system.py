@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 
 import psutil
 import pytest
-from hbutils.system import which
+from hbutils.system import which, is_windows, is_linux, is_macos
 
 from igm.env import sys
 from igm.env.internet.net import CONNECT_CACHE_TTL
@@ -174,3 +174,15 @@ class TestEnvSystem:
         assert not sys.internet
         assert not sys.internet.has_internet
         assert repr(sys.internet) == '<Internet unavailable>'
+
+    @skipUnless(is_windows(), 'windows only')
+    def test_os_actual_on_windows(self):
+        assert sys.os.type == 'win'
+
+    @skipUnless(is_linux(), 'linux only')
+    def test_os_actual_on_linux(self):
+        assert sys.os.type == 'linux'
+
+    @skipUnless(is_macos(), 'macos only')
+    def test_os_actual_on_macos(self):
+        assert sys.os.type == 'mac'
