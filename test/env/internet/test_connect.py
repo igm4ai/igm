@@ -13,7 +13,7 @@ class TestEnvInternetConnect:
     def test_try_connect_actual(self):
         baidu_ok, baidu_ttl = try_connect('baidu.com', 80)
         assert baidu_ok
-        assert 0 < baidu_ttl < 1
+        assert 0.0 <= baidu_ttl <= 1.0
 
     @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
@@ -27,7 +27,7 @@ class TestEnvInternetConnect:
     def test_try_connect_google_actual_out_of_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)
         assert google_ttl
-        assert 0 < google_ttl < 1
+        assert 0.0 <= google_ttl <= 1.0
 
     def test_try_connect_no_network(self, no_network):
         baidu_ok, baidu_ttl = try_connect('baidu.com', 80)
@@ -45,11 +45,11 @@ class TestEnvInternetConnect:
     def test_try_connect_network_in_gfw(self, network_in_gfw):
         baidu_ok, baidu_ttl = try_connect('baidu.com', 80)
         assert baidu_ok
-        assert 0 < baidu_ttl < 1
+        assert 0.0 <= baidu_ttl <= 1.0
 
         gitee_ok, gitee_ttl = try_connect('gitee.com', 80)
         assert gitee_ok
-        assert 0 < gitee_ttl < 1
+        assert 0.0 <= gitee_ttl <= 1.0
 
         google_ok, google_ttl = try_connect('google.com', 80)
         assert not google_ttl
@@ -58,12 +58,12 @@ class TestEnvInternetConnect:
     def test_try_connect_network_out_of_gfw(self, network_out_of_gfw):
         baidu_ok, baidu_ttl = try_connect('baidu.com', 80)
         assert baidu_ok
-        assert 0 < baidu_ttl < 1
+        assert 0.0 <= baidu_ttl <= 1.0
 
         gitee_ok, gitee_ttl = try_connect('gitee.com', 80)
         assert gitee_ok
-        assert 0 < gitee_ttl < 1
+        assert 0.0 <= gitee_ttl <= 1.0
 
         google_ok, google_ttl = try_connect('google.com', 80)
         assert google_ttl
-        assert 0 < google_ttl < 1
+        assert 0.0 <= google_ttl <= 1.0

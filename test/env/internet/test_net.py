@@ -25,7 +25,7 @@ class TestEnvInternetNet:
 
         assert internet.baidu
         assert internet.baidu.ok
-        assert 0 < internet.baidu.ttl < 1
+        assert 0.0 <= internet.baidu.ttl <= 1.0
         assert internet.baidu.address == 'baidu.com'
         assert internet.baidu.port == 80
         assert repr(internet.baidu).startswith('<BaiduConnect baidu.com:80, success, ttl:') and \
@@ -61,7 +61,7 @@ class TestEnvInternetNet:
 
         assert internet.baidu
         assert internet.baidu.ok
-        assert 0 < internet.baidu.ttl < 1
+        assert 0.0 <= internet.baidu.ttl <= 1.0
         assert internet.baidu.address == 'baidu.com'
         assert internet.baidu.port == 80
         assert repr(internet.baidu).startswith('<BaiduConnect baidu.com:80, success, ttl:') and \
@@ -69,7 +69,7 @@ class TestEnvInternetNet:
 
         assert internet.google
         assert internet.google.ok
-        assert 0 < internet.google.ttl < 1
+        assert 0.0 <= internet.google.ttl <= 1.0
         assert internet.google.address == 'google.com'
         assert internet.google.port == 80
         assert repr(internet.google).startswith('<GoogleConnect google.com:80, success, ttl:') and \
@@ -94,7 +94,7 @@ class TestEnvInternetNet:
 
         assert internet.baidu
         assert internet.baidu.ok
-        assert 0 < internet.baidu.ttl < 1
+        assert 0.0 <= internet.baidu.ttl <= 1.0
         assert internet.baidu.address == 'baidu.com'
         assert internet.baidu.port == 80
         assert repr(internet.baidu).startswith('<BaiduConnect baidu.com:80, success, ttl:') and \
@@ -127,7 +127,7 @@ class TestEnvInternetNet:
 
         assert internet.baidu
         assert internet.baidu.ok
-        assert 0 < internet.baidu.ttl < 1
+        assert 0.0 <= internet.baidu.ttl <= 1.0
         assert internet.baidu.address == 'baidu.com'
         assert internet.baidu.port == 80
         assert repr(internet.baidu).startswith('<BaiduConnect baidu.com:80, success, ttl:') and \
@@ -135,7 +135,7 @@ class TestEnvInternetNet:
 
         assert internet.google
         assert internet.google.ok
-        assert 0 < internet.google.ttl < 1
+        assert 0.0 <= internet.google.ttl <= 1.0
         assert internet.google.address == 'google.com'
         assert internet.google.port == 80
         assert repr(internet.google).startswith('<GoogleConnect google.com:80, success, ttl:') and \
