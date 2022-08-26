@@ -1,10 +1,11 @@
 import os
+import platform
 from unittest import skipUnless
 from unittest.mock import patch, MagicMock
 
 import psutil
 import pytest
-from hbutils.system import which, is_windows, is_linux, is_macos
+from hbutils.system import which, is_windows, is_linux, is_macos, package_version
 
 from igm.env import sys
 from igm.env.internet.net import CONNECT_CACHE_TTL
@@ -186,3 +187,18 @@ class TestEnvSystem:
     @skipUnless(is_macos(), 'macos only')
     def test_os_actual_on_macos(self):
         assert sys.os.type == 'mac'
+
+    def test_python_info_actual(self):
+        assert sys.python.version == platform.python_version()
+        assert sys.python.implement == platform.python_implementation()
+
+    def test_pip_actual(self):
+        assert sys.pip.version == package_version('pip')
+        assert sys.pip('hbutils').name == 'hbutils'
+        assert sys.pip('hbutils').version == package_version('hbutils')
+
+        assert str(sys.pip) == f'<Pip version: {package_version("pip")}>'
+        assert repr(sys.pip) == f'<Pip version: {package_version("pip")}>'
+
+        assert str(sys.pip('hbutils')) == f'hbutils=={package_version("hbutils")}'
+        assert repr(sys.pip('hbutils')) == f'<PipPackage hbutils, version: {package_version("hbutils")}>'
