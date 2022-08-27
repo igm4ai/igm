@@ -20,6 +20,7 @@ class TestConfTemplate:
 
         assert_same_path(template.path, os.path.join('test', 'utils'))
         assert template.template_dir == 'template'
+        assert template.requirements == []
 
         with capture_output() as c:
             template.print_info()

@@ -16,12 +16,14 @@ class TestConfSetup:
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
+            assert template.requirements == []
 
         with load_igm_setup(TEMPLATE_SIMPLE_FILE) as template:
             assert isinstance(template, IGMTemplate)
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
+            assert template.requirements == []
 
     def test_load_igm_setup_github(self):
         with load_igm_setup(f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git') as template:
@@ -29,6 +31,7 @@ class TestConfSetup:
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
+            assert template.requirements == []
 
     def test_load_igm_setup_download(self):
         with load_igm_setup('https://codeload.github.com/igm4ai/template-simple/zip/refs/heads/main',
@@ -37,3 +40,4 @@ class TestConfSetup:
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
+            assert template.requirements == []

@@ -1,16 +1,19 @@
 import contextlib
 import inspect
 import os
-from typing import Dict, ContextManager
+from typing import Dict, ContextManager, List, Union
 
 from hbutils.random import random_sha1_with_timestamp
 
+from .requirement import load_req
 from .template import IGMTemplate
 from ..utils import get_global, with_pythonpath, retrieve
 
 _IGM_SESSIONS: Dict[str, IGMTemplate] = {}
 _IGM_SESSION_ID_NAME = '__igm_session_id__'
 _IGM_PATH_NAME = '__igm_path__'
+
+_DEFAULT_REQUIREMENTS_TXT = 'requirements.txt'
 
 
 def igm_setup(
@@ -19,6 +22,7 @@ def igm_setup(
         version: str,
         description: str,
         template_dir='template',
+        requirements: Union[List[str], str, None] = None,
 ) -> IGMTemplate:
     outer_frame = inspect.currentframe().f_back
     outer_dir, _ = os.path.split(os.path.abspath(outer_frame.f_code.co_filename))
@@ -26,9 +30,28 @@ def igm_setup(
     session_id = get_global(_IGM_SESSION_ID_NAME, default=None)
     path = get_global(_IGM_PATH_NAME, default=outer_dir)
 
+    if isinstance(requirements, str) or \
+            (requirements is None and os.path.exists(os.path.join(path, _DEFAULT_REQUIREMENTS_TXT))):
+        reqfile = requirements if isinstance(requirements, str) \
+            else os.path.join(path, _DEFAULT_REQUIREMENTS_TXT)
+        requirements = load_req(reqfile)
+    elif requirements is None:
+        requirements = []
+    elif isinstance(requirements, (list, tuple)):
+        requirements = list(filter(lambda x: x.strip(), requirements))
+    else:
+        raise TypeError(f'Unknown requirements - {requirements!r}.')
+
     retval = IGMTemplate(
+        # meta information
         name, version, description,
-        path, template_dir,
+
+        # directory configuration
+        path=path,
+        template_dir=template_dir,
+
+        # dependency
+        requirements=requirements,
     )
     if session_id is not None:
         _IGM_SESSIONS[session_id] = retval

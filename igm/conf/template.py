@@ -1,19 +1,22 @@
 import builtins
 from contextlib import contextmanager
 from functools import partial
+from typing import List
 
+from .requirement import pip
 from ..utils import with_pythonpath, normpath
 
 
 class IGMTemplate:
     def __init__(self, name, version, description,
-                 path, template_dir='template'):
+                 path, template_dir='template', requirements: List[str] = None):
         self.__name = name
         self.__version = version
         self.__description = description
 
         self.__path = normpath(path)
         self.__template_dir = template_dir
+        self.__requirements = list(requirements or [])
 
     @property
     def name(self):
@@ -35,6 +38,10 @@ class IGMTemplate:
     def template_dir(self) -> str:
         return self.__template_dir
 
+    @property
+    def requirements(self) -> list:
+        return list(self.__requirements)
+
     def print_info(self, file=None):
         # print is replaced here to print all the output to ``file``
         if file is not None:
@@ -50,6 +57,9 @@ class IGMTemplate:
 
     def __repr__(self) -> str:
         return f'<{type(self).__name__} {self.__name}, v{self.__version}>'
+
+    def _install_requirements(self):
+        pip('install', *self.__requirements)
 
     @contextmanager
     def _python_path(self):
