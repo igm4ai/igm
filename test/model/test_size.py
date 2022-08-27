@@ -39,12 +39,12 @@ class TestModelSize:
         assert size_172mb.__index__() == 18035507
 
     def test_str(self, size_172mb, size_plus_172mb):
-        assert str(size_172mb) == '17.200 MiB'
-        assert str(size_plus_172mb) == '17.200 MiB'
+        assert str(size_172mb) == '17.20 MiB'
+        assert str(size_plus_172mb) == '17.20 MiB'
 
     def test_repr(self, size_172mb, size_plus_172mb):
-        assert repr(size_172mb) == '<SizeScale 17.200 MiB>'
-        assert repr(size_plus_172mb) == '<_SizePlus 17.200 MiB>'
+        assert repr(size_172mb) == '<SizeScale 17.20 MiB>'
+        assert repr(size_plus_172mb) == '<_SizePlus 17.20 MiB>'
 
     def test_cmp(self, size_172mb, size_plus_172mb):
         assert size_172mb == size_plus_172mb

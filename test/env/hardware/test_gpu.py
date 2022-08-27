@@ -57,18 +57,18 @@ class TestEnvHardwareGpu:
 
     def test_gpu_str(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
         assert str(cuda_1gpu_1.gpus[0]) == '<GPU NVIDIA GeForce RTX 2060, ' \
-                                           'GPU-cbfd8a17-9022-e1b9-ec1b-3286614c287e, 11.739 GiB>'
-        assert str(cuda_1gpu_2.gpus[0]) == '<GPU Quadro P620, GPU-dea351ca-cb1a-5263-51c0-e73ff2f4ad1c, 4.000 GiB>'
+                                           'GPU-cbfd8a17-9022-e1b9-ec1b-3286614c287e, 11.74 GiB>'
+        assert str(cuda_1gpu_2.gpus[0]) == '<GPU Quadro P620, GPU-dea351ca-cb1a-5263-51c0-e73ff2f4ad1c, 4.00 GiB>'
         assert str(cuda_2gpus.gpus[0]) == '<GPU Tesla A100-SXM-80GB, ' \
-                                          'GPU-6c7fbd63-1ece-3d5a-cb2e-e554469f949b, 79.347 GiB>'
+                                          'GPU-6c7fbd63-1ece-3d5a-cb2e-e554469f949b, 79.35 GiB>'
         assert str(cuda_2gpus.gpus[1]) == '<GPU Tesla A100-SXM-80GB, ' \
-                                          'GPU-d1824ae0-d312-b822-c6f5-be822f9eecc6, 79.347 GiB>'
+                                          'GPU-d1824ae0-d312-b822-c6f5-be822f9eecc6, 79.35 GiB>'
 
     def test_gpu_repr(self, cuda_1gpu_1, cuda_1gpu_2, cuda_2gpus):
         assert repr(cuda_1gpu_1.gpus[0]) == '<GPU NVIDIA GeForce RTX 2060, ' \
-                                            'GPU-cbfd8a17-9022-e1b9-ec1b-3286614c287e, 11.739 GiB>'
-        assert repr(cuda_1gpu_2.gpus[0]) == '<GPU Quadro P620, GPU-dea351ca-cb1a-5263-51c0-e73ff2f4ad1c, 4.000 GiB>'
+                                            'GPU-cbfd8a17-9022-e1b9-ec1b-3286614c287e, 11.74 GiB>'
+        assert repr(cuda_1gpu_2.gpus[0]) == '<GPU Quadro P620, GPU-dea351ca-cb1a-5263-51c0-e73ff2f4ad1c, 4.00 GiB>'
         assert repr(cuda_2gpus.gpus[0]) == '<GPU Tesla A100-SXM-80GB, ' \
-                                           'GPU-6c7fbd63-1ece-3d5a-cb2e-e554469f949b, 79.347 GiB>'
+                                           'GPU-6c7fbd63-1ece-3d5a-cb2e-e554469f949b, 79.35 GiB>'
         assert repr(cuda_2gpus.gpus[1]) == '<GPU Tesla A100-SXM-80GB, ' \
-                                           'GPU-d1824ae0-d312-b822-c6f5-be822f9eecc6, 79.347 GiB>'
+                                           'GPU-d1824ae0-d312-b822-c6f5-be822f9eecc6, 79.35 GiB>'

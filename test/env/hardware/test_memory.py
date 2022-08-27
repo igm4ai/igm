@@ -16,12 +16,12 @@ class TestEnvHardwareMemory:
         assert mem_1.avail_percentage.ratio == pytest.approx(0.1796025440522596)
 
     def test_mem_repr(self, mem_1, mem_2, mem_100):
-        assert repr(mem_1) == '<VirtualMemory total: 11.689 GiB, used: 9.240 GiB (79.05%), ' \
-                              'free: 334.996 MiB (2.80%), avail: 2.099 GiB (17.96%)>'
-        assert repr(mem_2) == '<VirtualMemory total: 63.757 GiB, used: 28.563 GiB (44.80%), ' \
-                              'free: 35.194 GiB (55.20%), avail: 35.194 GiB (55.20%)>'
-        assert repr(mem_100) == '<VirtualMemory total: 944.353 GiB, used: 28.686 GiB (3.04%), ' \
-                                'free: 756.443 GiB (80.10%), avail: 910.312 GiB (96.40%)>'
+        assert repr(mem_1) == '<VirtualMemory total: 11.69 GiB, used: 9.24 GiB (79.05%), ' \
+                              'free: 335.00 MiB (2.80%), avail: 2.10 GiB (17.96%)>'
+        assert repr(mem_2) == '<VirtualMemory total: 63.76 GiB, used: 28.56 GiB (44.80%), ' \
+                              'free: 35.19 GiB (55.20%), avail: 35.19 GiB (55.20%)>'
+        assert repr(mem_100) == '<VirtualMemory total: 944.35 GiB, used: 28.69 GiB (3.04%), ' \
+                                'free: 756.44 GiB (80.10%), avail: 910.31 GiB (96.40%)>'
 
     def test_mem_bool(self, mem_1, mem_2, mem_100):
         assert mem_1

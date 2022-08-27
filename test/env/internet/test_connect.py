@@ -11,6 +11,7 @@ from igm.env.internet.net import CONNECT_CACHE_TTL
 class TestEnvInternetConnect:
     @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
+    @skipUnless(not os.getenv('NO_ACTUAL'), 'actual is skipped')
     def test_try_connect_actual(self):
         baidu_ok, baidu_ttl = try_connect('baidu.com', 80)
         assert baidu_ok
@@ -18,6 +19,7 @@ class TestEnvInternetConnect:
 
     @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
+    @skipUnless(not os.getenv('NO_ACTUAL'), 'actual is skipped')
     def test_try_connect_google_actual_in_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)
         assert not google_ok
@@ -25,6 +27,7 @@ class TestEnvInternetConnect:
 
     @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(os.getenv('NO_GFW'), 'no gfw required')
+    @skipUnless(not os.getenv('NO_ACTUAL'), 'actual is skipped')
     def test_try_connect_google_actual_out_of_gfw(self):
         google_ok, google_ttl = try_connect('google.com', 80)
         assert google_ok

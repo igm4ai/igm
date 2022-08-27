@@ -1,5 +1,7 @@
 from typing import Optional
 
+from hbutils.string import plural_word
+
 from .hardware import get_cpu_info, CPUSet, CUDA, GPUCollection, get_memory_info, SwapMemory, VirtualMemory, \
     get_nvidia_info
 from .hardware.nvidia import NvidiaSmiNotFound
@@ -51,6 +53,14 @@ class SystemInfo:
     @property
     def pip(self) -> Pip:
         return self.python.pip
+
+    def __repr__(self):
+        _python = f'{self.python.implement} {self.python.version} on {self.os.type}'
+        _common = f'{plural_word(self.cpu.num, "core")} {self.memory.total}'
+        if self.gpu:
+            _common += f' with {plural_word(self.gpu.num, "gpu")}'
+
+        return f'<{type(self).__name__} {_python}, {_common}>'
 
 
 sys = SystemInfo()

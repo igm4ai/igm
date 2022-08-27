@@ -31,7 +31,7 @@ class SizeScale(Comparable):
         return self.__bytes
 
     def _str_format(self):
-        return size_to_bytes_str(self.__bytes, precision=3)
+        return size_to_bytes_str(self.__bytes, precision=2)
 
     def __str__(self) -> str:
         return self._str_format()

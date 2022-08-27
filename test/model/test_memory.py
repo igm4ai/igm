@@ -73,12 +73,12 @@ class TestModelMemory:
         assert mem_0.avail_percentage is None
 
     def test_repr(self, mem_724, mem_actual, mem_0, mem_avail):
-        assert repr(mem_724) == '<MemoryStatus total: 7.000 GiB, used: 2.235 GiB (31.93%), free: 4.765 GiB (68.07%)>'
-        assert repr(mem_actual) == '<ExampleMemoryStatus total: 11.739 GiB, ' \
-                                   'used: 140.000 MiB (1.16%), free: 11.603 GiB (98.84%)>'
-        assert repr(mem_0) == '<MemoryStatus total: 0.000 Bit>'
-        assert repr(mem_avail) == '<MemoryStatus total: 7.000 GiB, used: 2.235 GiB (31.93%), ' \
-                                  'free: 2.980 GiB (42.57%), avail: 5.000 GiB (71.43%)>'
+        assert repr(mem_724) == '<MemoryStatus total: 7.00 GiB, used: 2.24 GiB (31.93%), free: 4.76 GiB (68.07%)>'
+        assert repr(mem_actual) == '<ExampleMemoryStatus total: 11.74 GiB, ' \
+                                   'used: 140.00 MiB (1.16%), free: 11.60 GiB (98.84%)>'
+        assert repr(mem_0) == '<MemoryStatus total: 0.00 Bit>'
+        assert repr(mem_avail) == '<MemoryStatus total: 7.00 GiB, used: 2.24 GiB (31.93%), ' \
+                                  'free: 2.98 GiB (42.57%), avail: 5.00 GiB (71.43%)>'
 
     def test_bool(self, mem_724, mem_actual, mem_0, mem_avail):
         assert mem_724

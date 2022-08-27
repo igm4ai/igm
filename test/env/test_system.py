@@ -107,6 +107,7 @@ class TestEnvSystem:
     @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'sys.internet required')
     @skipUnless(not os.getenv('NO_GFW'), 'gfw required')
+    @skipUnless(not os.getenv('NO_ACTUAL'), 'actual is skipped')
     def test_internet_actual_has_internet_in_gfw(self):
         assert sys.internet
         assert sys.internet.has_internet
@@ -143,6 +144,7 @@ class TestEnvSystem:
     @pytest.mark.flaky(reruns=3, reruns_delay=CONNECT_CACHE_TTL)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     @skipUnless(os.getenv('NO_GFW'), 'no gfw required')
+    @skipUnless(not os.getenv('NO_ACTUAL'), 'actual is skipped')
     def test_internet_actual_has_internet_out_of_gfw(self):
         assert sys.internet
         assert sys.internet.has_internet
@@ -171,6 +173,7 @@ class TestEnvSystem:
                repr(sys.internet.google).endswith('ms>')
 
     @skipUnless(os.getenv('NO_INTERNET'), 'no internet required')
+    @skipUnless(not os.getenv('NO_ACTUAL'), 'actual is skipped')
     def test_internet_actual_no_network(self):
         assert not sys.internet
         assert not sys.internet.has_internet
@@ -202,3 +205,7 @@ class TestEnvSystem:
 
         assert str(sys.pip('hbutils')) == f'hbutils=={package_version("hbutils")}'
         assert repr(sys.pip('hbutils')) == f'<PipPackage hbutils, version: {package_version("hbutils")}>'
+
+    def test_sys_repr(self):
+        assert str(sys).startswith('<SystemInfo')
+        assert repr(sys).startswith('<SystemInfo')
