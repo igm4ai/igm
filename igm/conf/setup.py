@@ -5,7 +5,7 @@ from typing import Dict, ContextManager
 
 from hbutils.random import random_sha1_with_timestamp
 
-from ..template import IGMTemplate
+from .template import IGMTemplate
 from ..utils import get_global, with_pythonpath, retrieve
 
 _IGM_SESSIONS: Dict[str, IGMTemplate] = {}

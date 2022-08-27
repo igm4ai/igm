@@ -5,13 +5,13 @@ from textwrap import dedent
 import pytest
 from hbutils.testing import capture_output
 
-from igm.template import IGMTemplate
+from igm.conf import IGMTemplate
 from igm.utils import normpath
 from ..testings import assert_same_path
 
 
 @pytest.mark.unittest
-class TestTemplateModel:
+class TestConfTemplate:
     def test_igm_template_base(self):
         template = IGMTemplate('mt', '0.5.4', 'My Template', os.path.join('test', 'utils'))
         assert template.name == 'mt'
