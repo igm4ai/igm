@@ -57,6 +57,7 @@ class TestUtilsRetrieve:
                 assert os.path.exists(os.path.join(fd, 'meta.py'))
                 assert os.path.exists(os.path.join(fd, 'README.md'))
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @pytest.mark.parametrize(
         ['fmt', 'ext'],
         [
@@ -78,6 +79,7 @@ class TestUtilsRetrieve:
                 assert os.path.exists(os.path.join(fd, 'README.md'))
                 assert 'igm.conf' in pathlib.Path(os.path.join(fd, 'meta.py')).read_text()
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @pytest.mark.parametrize(
         ['fmt', 'ext'],
         [
@@ -99,6 +101,7 @@ class TestUtilsRetrieve:
                 _, filename = os.path.split(fd)
                 assert filename == f'{fmt}_template-simple{ext}'
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_download_file_with_content_type(self):
         with isolated_directory():
             with retrieve('https://codeload.github.com/igm4ai/template-simple/zip/refs/heads/main') as fd:
@@ -108,6 +111,7 @@ class TestUtilsRetrieve:
                 assert os.path.exists(os.path.join(fd, 'template-simple-main', 'README.md'))
                 assert 'igm.conf' in pathlib.Path(os.path.join(fd, 'template-simple-main', 'meta.py')).read_text()
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_retrieve_from_github(self):
         with isolated_directory():
             with retrieve(f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git') as fd:

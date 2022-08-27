@@ -17,6 +17,7 @@ class TestUtilsVcs:
         assert not is_vcs_url('jdsflkjsdlkfjdls')
         assert not is_vcs_url('/root')
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_retrieve_from_vcs(self):
         with isolated_directory({'template-simple': 'templates/simple'}):
             with pytest.raises(InvalidVCSURL):
