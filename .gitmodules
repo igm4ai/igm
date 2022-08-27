@@ -4,3 +4,6 @@
 [submodule "test/testfile"]
 	path = test/testfile
 	url = git@github.com:igm4ai/igm-testfile.git
+[submodule "templates/linear-regression"]
+	path = templates/linear-regression
+	url = git@github.com:igm4ai/template-linear-regression.git
