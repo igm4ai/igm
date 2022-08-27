@@ -2,7 +2,7 @@ import builtins
 from functools import partial
 from typing import Optional, Callable, Mapping
 
-from .inquire import with_user_inquire
+from .inquire import with_user_inquire, inquire_call
 from ..utils import with_pythonpath, normpath
 
 _DEFAULT_TEMPLATE_DIR = 'template'
@@ -58,6 +58,8 @@ class IGMTemplate:
         return f'<{type(self).__name__} {self.__name}, v{self.__version}>'
 
     def run(self):
-        with with_user_inquire(self.__inquire()), with_pythonpath(self.__path):
-            from igm.env import user, env, sys
-            print({'user': user, 'env': env, 'sys': sys})
+        ok, inquire_data = inquire_call(self.__inquire)
+        if ok:
+            with with_user_inquire(inquire_data), with_pythonpath(self.__path):
+                from igm.env import user, env, sys
+                print({'user': user, 'env': env, 'sys': sys})
