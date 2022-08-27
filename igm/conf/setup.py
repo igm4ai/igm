@@ -1,19 +1,19 @@
 import contextlib
 import inspect
 import os
-from typing import Dict, ContextManager, List, Union
+from typing import Dict, ContextManager, Optional, Callable, Mapping
 
 from hbutils.random import random_sha1_with_timestamp
 
-from .requirement import load_req
-from .template import IGMTemplate
-from ..utils import get_global, with_pythonpath, retrieve
+from .requirement import load_req, check_req, pip
+from .template import IGMTemplate, _DEFAULT_TEMPLATE_DIR
+from ..utils import get_global, with_pythonpath, retrieve, normpath
 
 _IGM_SESSIONS: Dict[str, IGMTemplate] = {}
 _IGM_SESSION_ID_NAME = '__igm_session_id__'
 _IGM_PATH_NAME = '__igm_path__'
 
-_DEFAULT_REQUIREMENTS_TXT = 'requirements.txt'
+_DEFAULT_REQ_FILE = 'requirements.txt'
 
 
 def igm_setup(
@@ -21,26 +21,14 @@ def igm_setup(
         name: str,
         version: str,
         description: str,
-        template_dir='template',
-        requirements: Union[List[str], str, None] = None,
+        template_dir: str = _DEFAULT_TEMPLATE_DIR,
+        inquire: Optional[Callable[[], Mapping]] = None,
 ) -> IGMTemplate:
     outer_frame = inspect.currentframe().f_back
     outer_dir, _ = os.path.split(os.path.abspath(outer_frame.f_code.co_filename))
 
     session_id = get_global(_IGM_SESSION_ID_NAME, default=None)
     path = get_global(_IGM_PATH_NAME, default=outer_dir)
-
-    if isinstance(requirements, str) or \
-            (requirements is None and os.path.exists(os.path.join(path, _DEFAULT_REQUIREMENTS_TXT))):
-        reqfile = requirements if isinstance(requirements, str) \
-            else os.path.join(path, _DEFAULT_REQUIREMENTS_TXT)
-        requirements = load_req(reqfile)
-    elif requirements is None:
-        requirements = []
-    elif isinstance(requirements, (list, tuple)):
-        requirements = list(filter(lambda x: x.strip(), requirements))
-    else:
-        raise TypeError(f'Unknown requirements - {requirements!r}.')
 
     retval = IGMTemplate(
         # meta information
@@ -50,8 +38,8 @@ def igm_setup(
         path=path,
         template_dir=template_dir,
 
-        # dependency
-        requirements=requirements,
+        # inquire
+        inquire=inquire,
     )
     if session_id is not None:
         _IGM_SESSIONS[session_id] = retval
@@ -72,6 +60,14 @@ def load_igm_setup(template: str, *segment: str, setup_filename='meta.py') -> Co
 
         session_id = random_sha1_with_timestamp()
         with with_pythonpath(pathdir):
+            # install requirements
+            _reqfile = normpath(pathdir, _DEFAULT_REQ_FILE)
+            if os.path.exists(_reqfile):
+                requirements = load_req(_reqfile)
+                if not check_req(requirements):
+                    pip('install', *requirements)
+
+            # load source file
             with open(pathfile, 'r') as sf:
                 exec(sf.read(), {
                     _IGM_SESSION_ID_NAME: session_id,

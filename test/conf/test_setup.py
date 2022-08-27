@@ -17,14 +17,12 @@ class TestConfSetup:
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
-            assert template.requirements == []
 
         with load_igm_setup(TEMPLATE_SIMPLE_FILE) as template:
             assert isinstance(template, IGMTemplate)
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
-            assert template.requirements == []
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_load_igm_setup_github(self):
@@ -33,7 +31,6 @@ class TestConfSetup:
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
-            assert template.requirements == []
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_load_igm_setup_download(self):
@@ -43,7 +40,6 @@ class TestConfSetup:
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
-            assert template.requirements == []
 
     def test_load_linear_regression(self):
         with load_igm_setup(TEMPLATE_LINEAR) as template:
@@ -51,4 +47,3 @@ class TestConfSetup:
             assert template.name == 'linear-regression'
             assert template.version == TEMPLATE_LINEAR_VERSION
             assert template.description == 'This is a IGM template for linear regression problem'
-            assert template.requirements == ['torch>=1.6.0']
