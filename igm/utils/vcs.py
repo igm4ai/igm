@@ -1,3 +1,5 @@
+import inspect
+
 from pip._internal.models.link import Link
 from pip._internal.utils.misc import hide_url
 from pip._internal.vcs import vcs
@@ -41,5 +43,6 @@ def retrieve_from_vcs(url: str, dstpath: str, verbosity: int = 1):
         raise InvalidVCSURL(url)
 
     vcs_backend = _get_vcs_backend(url)
-    vcs_backend.obtain(dstpath, hide_url(url), verbosity)
+    args_num = len(inspect.signature(vcs_backend.obtain).parameters)
+    vcs_backend.obtain(*(dstpath, hide_url(url), verbosity)[:args_num])
     return dstpath
