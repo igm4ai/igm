@@ -22,6 +22,7 @@ class TestUtilsVcs:
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
+    @skipUnless(not os.getenv('NO_GITHUB'), 'github not accessible')
     def test_retrieve_from_vcs(self):
         with isolated_directory({'template-simple': 'templates/simple'}):
             with pytest.raises(InvalidVCSURL):
