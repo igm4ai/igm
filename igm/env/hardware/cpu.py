@@ -9,7 +9,6 @@ import psutil
 from hbutils.string import plural_word
 from hbutils.system import is_linux
 
-from .base import RESOURCE_TIMEOUT
 from ...model import GenericCollection, Percentage, MappingBasedModel
 
 
@@ -53,6 +52,7 @@ def _get_cpu_info(ttl_hash):
 
 
 def get_cpu_info():
+    from .base import RESOURCE_TIMEOUT
     return _get_cpu_info(int(time.time() // RESOURCE_TIMEOUT))
 
 

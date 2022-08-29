@@ -7,8 +7,6 @@ from functools import lru_cache
 import xmltodict
 from hbutils.system import which
 
-from .base import RESOURCE_TIMEOUT
-
 
 class NvidiaSmiNotFound(Exception):
     pass
@@ -21,7 +19,6 @@ class NvidiaSmiFailed(Exception):
 @lru_cache()
 def _nvidia_smi_info(ttl_hash):
     _ = ttl_hash
-
     nvidia_smi = which('nvidia-smi')
     if not nvidia_smi:
         raise NvidiaSmiNotFound('nvidia-smi not found in current environment.')
@@ -40,4 +37,5 @@ def _nvidia_smi_info(ttl_hash):
 
 
 def get_nvidia_info():
+    from .base import RESOURCE_TIMEOUT
     return _nvidia_smi_info(int(time.time() // RESOURCE_TIMEOUT))

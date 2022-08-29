@@ -4,3 +4,5 @@ validators>=0.20.0
 psutil>=5.9.0
 xmltodict>=0.13.0
 py-cpuinfo>=8.0.0
+potc>=0.1.0
+Jinja2>=3.0.0

@@ -3,7 +3,6 @@ from functools import lru_cache
 
 import psutil
 
-from .base import RESOURCE_TIMEOUT
 from ...model import MemoryStatus
 
 
@@ -17,6 +16,7 @@ def _get_memory_info(ttl_hash):
 
 
 def get_memory_info():
+    from .base import RESOURCE_TIMEOUT
     return _get_memory_info(int(time.time() // RESOURCE_TIMEOUT))
 
 
