@@ -1,3 +1,6 @@
+import os
+from unittest import skipUnless
+
 import pytest
 from hbutils.testing import isolated_directory
 
@@ -18,6 +21,7 @@ class TestUtilsVcs:
         assert not is_vcs_url('/root')
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
+    @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_retrieve_from_vcs(self):
         with isolated_directory({'template-simple': 'templates/simple'}):
             with pytest.raises(InvalidVCSURL):

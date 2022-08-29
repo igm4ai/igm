@@ -1,5 +1,6 @@
 import os.path
 import pathlib
+from unittest import skipUnless
 
 import pytest
 from hbutils.testing import isolated_directory
@@ -70,6 +71,7 @@ class TestUtilsRetrieve:
             ('zip', '.zip'),
         ]
     )
+    @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_download_file(self, fmt, ext):
         with isolated_directory():
             with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple{ext}') as fd:
@@ -92,6 +94,7 @@ class TestUtilsRetrieve:
             ('zip', '.zip'),
         ]
     )
+    @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_download_file_not_unpack(self, fmt, ext):
         with isolated_directory():
             with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple{ext}',
@@ -102,6 +105,7 @@ class TestUtilsRetrieve:
                 assert filename == f'{fmt}_template-simple{ext}'
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
+    @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_download_file_with_content_type(self):
         with isolated_directory():
             with retrieve('https://codeload.github.com/igm4ai/template-simple/zip/refs/heads/main') as fd:
@@ -112,6 +116,7 @@ class TestUtilsRetrieve:
                 assert 'igm.conf' in pathlib.Path(os.path.join(fd, 'template-simple-main', 'meta.py')).read_text()
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
+    @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_retrieve_from_github(self):
         with isolated_directory():
             with retrieve(f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git') as fd:

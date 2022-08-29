@@ -1,3 +1,6 @@
+import os
+from unittest import skipUnless
+
 import pytest
 
 from igm.conf import load_igm_setup, IGMTemplate
@@ -24,6 +27,7 @@ class TestConfSetup:
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
 
+    @skipUnless(not os.getenv('NO_INTERNET'), 'no internet required')
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_load_igm_setup_github(self):
         with load_igm_setup(f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git') as template:
@@ -32,6 +36,7 @@ class TestConfSetup:
             assert template.version == TEMPLATE_SIMPLE_VERSION
             assert template.description == 'This is a simplest IGM template'
 
+    @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_load_igm_setup_download(self):
         with load_igm_setup('https://codeload.github.com/igm4ai/template-simple/zip/refs/heads/main',
