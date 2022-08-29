@@ -1,8 +1,12 @@
 import builtins
+import os
 from functools import partial
-from typing import Optional, Callable, Mapping
+from typing import Optional, Callable, Mapping, Any
+
+from hbutils.system import remove
 
 from .inquire import with_user_inquire, inquire_call
+from ..render import DirectoryBasedTask
 from ..utils import with_pythonpath, normpath
 
 _DEFAULT_TEMPLATE_DIR = 'template'
@@ -11,7 +15,8 @@ _DEFAULT_TEMPLATE_DIR = 'template'
 class IGMTemplate:
     def __init__(self, name, version, description,
                  path, template_dir=_DEFAULT_TEMPLATE_DIR,
-                 inquire: Optional[Callable[[], Mapping]] = None):
+                 inquire: Optional[Callable[[], Mapping]] = None,
+                 extras: Optional[Mapping[str, Any]] = None):
         self.__name = name
         self.__version = version
         self.__description = description
@@ -20,6 +25,7 @@ class IGMTemplate:
         self.__template_dir = normpath(self.__path, template_dir)
 
         self.__inquire = (inquire or (lambda: {}))
+        self.__extras = dict(extras or {})
 
     @property
     def name(self):
@@ -57,9 +63,17 @@ class IGMTemplate:
     def __repr__(self) -> str:
         return f'<{type(self).__name__} {self.__name}, v{self.__version}>'
 
-    def run(self):
+    def run(self, dstdir: str):
+        if os.path.exists(dstdir):
+            raise FileExistsError(f'Path {dstdir!r} already exist.')
+
         ok, inquire_data = inquire_call(self.__inquire)
         if ok:
-            with with_user_inquire(inquire_data), with_pythonpath(self.__path):
-                from igm.env import user, env, sys
-                print({'user': user, 'env': env, 'sys': sys})
+            try:
+                with with_user_inquire(inquire_data), with_pythonpath(self.__path):
+                    task = DirectoryBasedTask(self.__template_dir, dstdir, self.__extras)
+                    task.run()
+            except BaseException:
+                if os.path.exists(dstdir):
+                    remove(dstdir)
+                raise

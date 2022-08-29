@@ -1,7 +1,7 @@
 import contextlib
 import inspect
 import os
-from typing import Dict, ContextManager, Optional, Callable, Mapping
+from typing import Dict, ContextManager, Optional, Callable, Mapping, Any
 
 from hbutils.random import random_sha1_with_timestamp
 
@@ -23,6 +23,7 @@ def igm_setup(
         description: str,
         template_dir: str = _DEFAULT_TEMPLATE_DIR,
         inquire: Optional[Callable[[], Mapping]] = None,
+        extras: Optional[Mapping[str, Any]] = None
 ) -> IGMTemplate:
     outer_frame = inspect.currentframe().f_back
     outer_dir, _ = os.path.split(os.path.abspath(outer_frame.f_code.co_filename))
@@ -40,6 +41,7 @@ def igm_setup(
 
         # inquire
         inquire=inquire,
+        extras=extras,
     )
     if session_id is not None:
         _IGM_SESSIONS[session_id] = retval
