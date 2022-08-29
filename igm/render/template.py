@@ -12,24 +12,31 @@ from .base import RenderJob, RenderTask
 from .imports import PyImport
 
 
+class NotTemplateFile(Exception):
+    pass
+
+
 class DirectoryBasedTask(RenderTask):
     def __init__(self, srcdir: str, dststr: str, extras: Optional[Mapping[str, Any]] = None):
         self.srcdir = srcdir
         self.dstdir = dststr
         self._extras = dict(extras or {})
-        RenderTask.__init__(self, self._load_jobs())
+        RenderTask.__init__(self, list(self._yield_jobs()))
 
-    def _load_jobs(self):
-        jobs = []
+    def _load_job_by_file(self, relfile: str):
+        srcfile = os.path.join(self.srcdir, relfile)
+        dstfile = os.path.join(self.dstdir, relfile)
+        return TemplateJob(srcfile, dstfile, self._extras)
+
+    def _yield_jobs(self):
         for curdir, subdirs, files in os.walk(self.srcdir):
             cur_reldir = os.path.relpath(curdir, self.srcdir)
             for file in files:
                 curfile = os.path.join(cur_reldir, file)
-                srcfile = os.path.join(self.srcdir, curfile)
-                dstfile = os.path.join(self.dstdir, curfile)
-                jobs.append(TemplateJob(srcfile, dstfile, self._extras))
-
-        return jobs
+                try:
+                    yield self._load_job_by_file(curfile)
+                except NotTemplateFile:
+                    pass
 
 
 class TemplateImportWarning(Warning):
