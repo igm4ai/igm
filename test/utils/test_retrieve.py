@@ -6,7 +6,7 @@ import pytest
 from hbutils.testing import isolated_directory
 
 from igm.utils import retrieve
-from test.testings import GITHUB_HOST
+from ..testings import GITHUB_HOST, get_testfile_url, TEMPLATE_SIMPLE_REPO_GIT
 
 
 @pytest.mark.unittest
@@ -72,10 +72,9 @@ class TestUtilsRetrieve:
         ]
     )
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
-    @skipUnless(not os.getenv('NO_GITHUB'), 'github not accessible')
     def test_download_file(self, fmt, ext):
         with isolated_directory():
-            with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple{ext}') as fd:
+            with retrieve(get_testfile_url(f'{fmt}_template-simple{ext}')) as fd:
                 assert os.path.exists(fd)
                 assert os.path.isdir(fd)
                 assert os.path.exists(os.path.join(fd, 'meta.py'))
@@ -96,11 +95,9 @@ class TestUtilsRetrieve:
         ]
     )
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
-    @skipUnless(not os.getenv('NO_GITHUB'), 'github not accessible')
     def test_download_file_not_unpack(self, fmt, ext):
         with isolated_directory():
-            with retrieve(f'https://{GITHUB_HOST}/igm4ai/igm-testfile/raw/main/{fmt}_template-simple{ext}',
-                          auto_unpack=False) as fd:
+            with retrieve(get_testfile_url(f'{fmt}_template-simple{ext}'), auto_unpack=False) as fd:
                 assert os.path.exists(fd)
                 assert os.path.isfile(fd)
                 _, filename = os.path.split(fd)
@@ -120,10 +117,9 @@ class TestUtilsRetrieve:
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
-    @skipUnless(not os.getenv('NO_GITHUB'), 'github not accessible')
     def test_retrieve_from_github(self):
         with isolated_directory():
-            with retrieve(f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git') as fd:
+            with retrieve(TEMPLATE_SIMPLE_REPO_GIT) as fd:
                 assert os.path.exists(fd)
                 assert os.path.isdir(fd)
                 assert os.path.exists(os.path.join(fd, 'meta.py'))
