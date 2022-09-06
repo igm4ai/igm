@@ -113,6 +113,11 @@ class TqdmUpTo(tqdm):
         return self.update(b * bsize - self.n)  # also sets self.n = b * bsize
 
 
+def _get_terminal_width():
+    width, _ = shutil.get_terminal_size()
+    return width
+
+
 def _guess_extract_type(filename: str, content: Optional[str] = None) -> Optional[str]:
     if content:
         ext_guess = mimetypes.guess_extension(content)
@@ -142,7 +147,8 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = 
             with tempfile.TemporaryDirectory() as tdir:
                 if not silent:
                     print(f'Downloading {srcpos!r}...')
-                    with TqdmUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1, desc=filename) as t:
+                    with TqdmUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1,
+                                  ncols=min(80, _get_terminal_width())) as t:
                         local_filename, headers = urlretrieve(
                             srcpos, os.path.join(tdir, filename), reporthook=t.update_to, data=None)
                         t.total = t.n
