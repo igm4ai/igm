@@ -7,6 +7,7 @@ from typing import List, Dict, Any, Optional, Mapping
 from jinja2 import Environment
 from potc import transobj as _potc_transobj
 from potc.fixture.imports import ImportStatement
+from tqdm import tqdm
 
 from .base import RenderJob, RenderTask
 from .imports import PyImport
@@ -37,6 +38,12 @@ class DirectoryBasedTask(RenderTask):
                     yield self._load_job_by_file(curfile)
                 except NotTemplateFile:
                     pass
+
+    def _task_data(self):
+        return {
+            'srcdir': self.srcdir,
+            'dstdir': self.dstdir,
+        }
 
 
 class TemplateImportWarning(Warning):
@@ -87,8 +94,12 @@ class TemplateJob(RenderJob):
             'potc': self._transobj, 'py': PyImport(),
         }
 
-    def _run(self, log):
-        log(f'Rendering from {self.srcpath!r} to {self.dstpath!r} ...')
+    def run(self, task_data: dict, pgbar: Optional[tqdm], silent: bool = False):
+        if not silent:
+            src_relpath = os.path.relpath(self.srcpath, start=task_data['srcdir'])
+            pgbar.set_description(f'{src_relpath}')
+            pgbar.update()
+
         with open(self.srcpath, 'r') as rf:
             template = self._environ.from_string(rf.read())
 

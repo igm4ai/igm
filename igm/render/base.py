@@ -1,6 +1,8 @@
-import sys
-from functools import partial
-from typing import Iterable
+from typing import Iterable, Optional
+
+from tqdm import tqdm
+
+from igm.utils import tqdm_ncols
 
 
 class RenderTask:
@@ -10,10 +12,26 @@ class RenderTask:
     def __len__(self):
         return len(self.__jobs)
 
-    def run(self, stream=None):
-        stream = stream or sys.stdout
-        for job in self.__jobs:
-            job.run(stream)
+    def _task_data(self):
+        raise NotImplementedError  # pragma: no cover
+
+    def run(self, silent: bool = False):
+        # initialize
+        if not silent:
+            jobs = tqdm(self.__jobs, ncols=tqdm_ncols())
+            pgbar = jobs
+        else:
+            jobs = self.__jobs
+            pgbar = None
+
+        # run jobs
+        for job in jobs:
+            job.run(self._task_data(), pgbar, silent=silent)
+
+        # run complete
+        if pgbar:
+            pgbar.set_description('Complete.')
+            pgbar.update()
 
 
 class RenderJob:
@@ -21,9 +39,5 @@ class RenderJob:
         self.srcpath = srcpath
         self.dstpath = dstpath
 
-    def run(self, stream=None):
-        stream = stream or sys.stdout
-        self._run(partial(print, file=stream))
-
-    def _run(self, log):
+    def run(self, task_data, pgbar: Optional[tqdm], silent: bool = False):
         raise NotImplementedError  # pragma: no cover

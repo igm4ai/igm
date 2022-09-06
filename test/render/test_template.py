@@ -34,46 +34,39 @@ def config_2():
 @pytest.mark.unittest
 class TestRenderTemplate:
     def test_job_cfg_1(self, config_1):
-        with capture_output() as co:
-            with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
-                t = TemplateJob('template.py', 'main.py')
-                t.run()
-                with open('main.py', 'r') as rf:
-                    lines = list(filter(bool, map(str.strip, rf.readlines())))
-                    assert lines == [
-                        'cpus = 6',
-                        "mem_size = '63.76 GiB'",
-                        "os = 'Windows'",
-                        "python = 'PyPy 3.7.12'",
+        with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
+            t = TemplateJob('template.py', 'main.py')
+            t.run({}, None, silent=True)
+            with open('main.py', 'r') as rf:
+                lines = list(filter(bool, map(str.strip, rf.readlines())))
+                assert lines == [
+                    'cpus = 6',
+                    "mem_size = '63.76 GiB'",
+                    "os = 'Windows'",
+                    "python = 'PyPy 3.7.12'",
 
-                        "print('This is your first try!')",
-                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')"
-                    ]
-
-        assert 'Rendering' in co.stdout
+                    "print('This is your first try!')",
+                    "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')"
+                ]
 
     def test_job_cfg_2(self, config_2):
-        with capture_output() as co:
-            with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
-                t = TemplateJob('template.py', 'main.py')
-                t.run()
-                with open('main.py', 'r') as rf:
-                    lines = list(filter(bool, map(str.strip, rf.readlines())))
-                    print(lines)
-                    assert lines == [
-                        'cpus = 112',
-                        "mem_size = '944.35 GiB'",
-                        "os = 'macOS'",
-                        "python = 'CPython 3.9.4'",
-                        "cuda_version = '11.2'",
-                        'gpu_num = 2',
+        with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
+            t = TemplateJob('template.py', 'main.py')
+            t.run({}, None, silent=True)
+            with open('main.py', 'r') as rf:
+                lines = list(filter(bool, map(str.strip, rf.readlines())))
+                assert lines == [
+                    'cpus = 112',
+                    "mem_size = '944.35 GiB'",
+                    "os = 'macOS'",
+                    "python = 'CPython 3.9.4'",
+                    "cuda_version = '11.2'",
+                    'gpu_num = 2',
 
-                        "print('This is your first try!')",
-                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
-                        "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
-                    ]
-
-        assert 'Rendering' in co.stdout
+                    "print('This is your first try!')",
+                    "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                    "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                ]
 
     def test_task_simple(self, config_2):
         with capture_output() as co:
@@ -109,9 +102,6 @@ class TestRenderTemplate:
                             '```'
                         ]
 
-        assert 'Rendering' in co.stdout
-        assert len(list(filter(bool, map(str.strip, co.stdout.splitlines())))) == 2
-
     def test_task_simple_with_easydict(self, config_2):
         with capture_output() as co:
             with with_user_inquire({'name': EasyDict({'v': 'hansbug'}), 'age': 24, 'gender': 'Male'}):
@@ -146,6 +136,3 @@ class TestRenderTemplate:
                             'python main.py',
                             '```'
                         ]
-
-        assert 'Rendering' in co.stdout
-        assert len(list(filter(bool, map(str.strip, co.stdout.splitlines())))) == 2

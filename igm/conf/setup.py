@@ -52,8 +52,9 @@ def igm_setup(
 
 
 @contextlib.contextmanager
-def load_igm_setup(template: str, *segment: str, setup_filename='meta.py') -> ContextManager[IGMTemplate]:
-    with retrieve(template) as path:
+def load_igm_setup(template: str, *segment: str,
+                   setup_filename='meta.py', silent: bool = False) -> ContextManager[IGMTemplate]:
+    with retrieve(template, silent=silent) as path:
         path = os.path.abspath(os.path.join(path, *segment))
         if os.path.isfile(path):
             (pathdir, _), pathfile = os.path.split(path), path

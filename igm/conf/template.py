@@ -63,7 +63,7 @@ class IGMTemplate:
     def __repr__(self) -> str:
         return f'<{type(self).__name__} {self.__name}, v{self.__version}>'
 
-    def run(self, dstdir: str):
+    def run(self, dstdir: str, silent: bool = False):
         if os.path.exists(dstdir):
             raise FileExistsError(f'Path {dstdir!r} already exist.')
 
@@ -72,7 +72,7 @@ class IGMTemplate:
             try:
                 with with_user_inquire(inquire_data), with_pythonpath(self.__path):
                     task = DirectoryBasedTask(self.__template_dir, dstdir, self.__extras)
-                    task.run()
+                    task.run(silent=silent)
             except BaseException:
                 if os.path.exists(dstdir):
                     remove(dstdir)
