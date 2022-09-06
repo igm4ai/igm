@@ -12,6 +12,7 @@ import validators
 from hbutils.system import copy
 from hbutils.testing import vpython
 from pip._internal.models.link import Link
+from tqdm import tqdm
 
 from .archive import unpack_archive
 from .path import _samepath
@@ -92,6 +93,26 @@ else:
                 self._rmtree(self.name)
 
 
+class TqdmUpTo(tqdm):
+    """
+    Provides `update_to(n)` which uses `tqdm.update(delta_n)`.
+    This is the example from tqdm official.
+    """
+
+    def update_to(self, b=1, bsize=1, tsize=None):
+        """
+        b  : int, optional
+            Number of blocks transferred so far [default: 1].
+        bsize  : int, optional
+            Size of each block (in tqdm units) [default: 1].
+        tsize  : int, optional
+            Total size (in tqdm units). If [default: None] remains unchanged.
+        """
+        if tsize is not None:
+            self.total = tsize
+        return self.update(b * bsize - self.n)  # also sets self.n = b * bsize
+
+
 def _guess_extract_type(filename: str, content: Optional[str] = None) -> Optional[str]:
     if content:
         ext_guess = mimetypes.guess_extension(content)
@@ -109,16 +130,30 @@ def _guess_extract_type(filename: str, content: Optional[str] = None) -> Optiona
     return content
 
 
-def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
+def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = False) -> str:
     if is_vcs_url(srcpos):
+        if not silent:
+            print(f'Cloning from VCS {srcpos!r}...')
+
         return retrieve_from_vcs(srcpos, dstpath)
     else:
-        if validators.url(srcpos):
+        if validators.url(srcpos):  # is url, need download
             filename = Link(srcpos).filename
             with tempfile.TemporaryDirectory() as tdir:
-                local_filename, headers = urlretrieve(srcpos, os.path.join(tdir, filename))
+                if not silent:
+                    print(f'Downloading {srcpos!r}...')
+                    with TqdmUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1, desc=filename) as t:
+                        local_filename, headers = urlretrieve(
+                            srcpos, os.path.join(tdir, filename), reporthook=t.update_to, data=None)
+                        t.total = t.n
+                else:
+                    local_filename, headers = urlretrieve(srcpos, os.path.join(tdir, filename))
+
                 archive_format = _guess_extract_type(filename, headers.get('Content-Type', None))
                 if auto_unpack and archive_format:  # unpack archive file to directory
+                    if not silent:
+                        print(f'Unpacking archive {filename!r}...')
+
                     unpack_archive(local_filename, dstpath, archive_format)
                     return dstpath
                 else:  # just copy the file
@@ -130,6 +165,9 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
             filedir, filename = os.path.split(dstpath)
             archive_format = _guess_extract_type(filename)
             if auto_unpack and archive_format and os.path.isfile(srcpos):  # is an archive file
+                if not silent:
+                    print(f'Unpacking archive {filename!r}...')
+
                 unpack_archive(srcpos, dstpath, archive_format)
                 return dstpath
             else:  # just copy the file
@@ -139,8 +177,8 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True) -> str:
 
 
 @contextlib.contextmanager
-def retrieve(srcpos, auto_unpack: bool = True) -> str:
+def retrieve(srcpos, auto_unpack: bool = True, silent: bool = False) -> str:
     with _TemporaryDirectory() as td:
         target = os.path.join(td, Link(srcpos).filename)
-        downloaded = retrieve_to_local(srcpos, target, auto_unpack=auto_unpack)
+        downloaded = retrieve_to_local(srcpos, target, auto_unpack=auto_unpack, silent=silent)
         yield os.path.join(downloaded)
