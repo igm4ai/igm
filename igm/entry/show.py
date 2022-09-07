@@ -1,6 +1,6 @@
 import click
 
-from .base import CONTEXT_SETTINGS
+from .base import CONTEXT_SETTINGS, command_wrap
 from ..conf import load_igm_setup
 
 
@@ -10,6 +10,7 @@ def _show_cli(cli: click.Group):
     @click.option('--silent', is_flag=True, default=False,
                   help='Do not show the process of template loading.', show_default=True)
     @click.argument('template', type=str)
+    @command_wrap()
     def _show(template: str, silent: bool):
         with load_igm_setup(template, silent=silent) as t:
             click.secho(f'Template: ', nl=False)
