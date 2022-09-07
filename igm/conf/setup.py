@@ -7,7 +7,7 @@ from hbutils.random import random_sha1_with_timestamp
 
 from .requirement import load_req, check_req, pip
 from .template import IGMTemplate, _DEFAULT_TEMPLATE_DIR
-from ..utils import get_global, with_pythonpath, retrieve, normpath
+from ..utils import get_global_env, with_pythonpath, retrieve, normpath
 
 _IGM_SESSIONS: Dict[str, IGMTemplate] = {}
 _IGM_SESSION_ID_NAME = '__igm_session_id__'
@@ -28,8 +28,8 @@ def igm_setup(
     outer_frame = inspect.currentframe().f_back
     outer_dir, _ = os.path.split(os.path.abspath(outer_frame.f_code.co_filename))
 
-    session_id = get_global(_IGM_SESSION_ID_NAME, default=None)
-    path = get_global(_IGM_PATH_NAME, default=outer_dir)
+    session_id = get_global_env(_IGM_SESSION_ID_NAME, default=None)
+    path = get_global_env(_IGM_PATH_NAME, default=outer_dir)
 
     retval = IGMTemplate(
         # meta information

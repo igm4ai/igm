@@ -19,7 +19,7 @@ class RenderTask(Sequence):
         return self.__jobs[index]
 
     def run(self, silent: bool = False):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class DirectoryBasedTask(RenderTask):
@@ -30,7 +30,7 @@ class DirectoryBasedTask(RenderTask):
         RenderTask.__init__(self, list(self._yield_jobs()))
 
     def _yield_jobs(self) -> Iterator['RenderJob']:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def run(self, silent: bool = False):
         # initialize

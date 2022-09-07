@@ -68,13 +68,14 @@ class TestRenderTemplate:
                     "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
                 ]
 
-    def test_task_simple(self, config_2):
-        with capture_output() as co:
+    @pytest.mark.parametrize(['silent'], [(True,), (False,)])
+    def test_task_simple(self, config_2, silent):
+        with capture_output():
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
                     t = IGMRenderTask('template', 'project')
                     assert len(t) == 2
-                    t.run()
+                    t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:
                         lines = list(filter(bool, map(str.strip, rf.readlines())))

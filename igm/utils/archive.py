@@ -1,3 +1,5 @@
+import mimetypes
+import os
 import shutil
 from typing import Optional
 
@@ -59,3 +61,28 @@ def unpack_archive(filename, dstpath, fmt: Optional[str] = None):
     """
     shutil.unpack_archive(filename, dstpath, fmt)
     return dstpath
+
+
+def get_archive_type(filename: str, content_type: Optional[str] = None) -> Optional[str]:
+    """
+    Overview:
+        Get archive file type of the given ``filename`` and ``content_type``.
+
+    :param filename: Filename.
+    :param content_type: Content-Type information from remote.
+    :return: Archive format, can be used in :func:`shutils.unpack_archive` method.
+    """
+    if content_type:
+        ext_guess = mimetypes.guess_extension(content_type)
+        if ext_guess:
+            for name, exts, _ in shutil.get_unpack_formats():
+                if ext_guess in exts:
+                    return name
+
+    filename = os.path.normcase(filename)
+    for name, exts, _ in shutil.get_unpack_formats():
+        for ext in exts:
+            if filename.endswith(ext):
+                return name
+
+    return None

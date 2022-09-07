@@ -1,28 +1,27 @@
 import contextlib
-import mimetypes
 import os
 import shutil
 import tempfile
 import warnings
 import weakref
-from typing import Optional
 from urllib.request import urlretrieve
 
 import validators
 from hbutils.system import copy
 from hbutils.testing import vpython
-from pip._internal.models.link import Link
 from tqdm import tqdm
 
 from .archive import unpack_archive
 from .path import _samepath
 from .tqdm import tqdm_ncols
+from .url import get_url_filename
+from . import get_archive_type
 from .vcs import is_vcs_url, retrieve_from_vcs
 
 if vpython >= '3.8':
-    _TemporaryDirectory = tempfile.TemporaryDirectory
+    LocalTemporaryDirectory = tempfile.TemporaryDirectory
 else:
-    class _TemporaryDirectory(object):  # pragma: no cover
+    class LocalTemporaryDirectory(object):  # pragma: no cover
         """
         THIS CLASS IS COPIED FROM PYTHON3.8's TEMPFILE.
         Because PermissionError will be raised when use native TemporaryDirectory on Windows python3.7.
@@ -94,7 +93,7 @@ else:
                 self._rmtree(self.name)
 
 
-class TqdmUpTo(tqdm):
+class TqdmForURLDownload(tqdm):
     """
     Provides `update_to(n)` which uses `tqdm.update(delta_n)`.
     This is the example from tqdm official.
@@ -114,23 +113,6 @@ class TqdmUpTo(tqdm):
         return self.update(b * bsize - self.n)  # also sets self.n = b * bsize
 
 
-def _guess_extract_type(filename: str, content: Optional[str] = None) -> Optional[str]:
-    if content:
-        ext_guess = mimetypes.guess_extension(content)
-        if ext_guess:
-            for name, exts, _ in shutil.get_unpack_formats():
-                if ext_guess in exts:
-                    return name
-
-    filename = os.path.normcase(filename)
-    for name, exts, _ in shutil.get_unpack_formats():
-        for ext in exts:
-            if filename.endswith(ext):
-                return name
-
-    return content
-
-
 def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = False) -> str:
     if is_vcs_url(srcpos):
         if not silent:
@@ -139,18 +121,19 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = 
         return retrieve_from_vcs(srcpos, dstpath)
     else:
         if validators.url(srcpos):  # is url, need download
-            filename = Link(srcpos).filename
-            with tempfile.TemporaryDirectory() as tdir:
+            filename = get_url_filename(srcpos)
+            with LocalTemporaryDirectory() as tdir:
                 if not silent:
                     print(f'Downloading {srcpos!r}...')
-                    with TqdmUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1, ncols=tqdm_ncols()) as t:
+                    with TqdmForURLDownload(unit='B', unit_scale=True, unit_divisor=1024, miniters=1,
+                                            ncols=tqdm_ncols()) as t:
                         local_filename, headers = urlretrieve(
                             srcpos, os.path.join(tdir, filename), reporthook=t.update_to, data=None)
                         t.total = t.n
                 else:
                     local_filename, headers = urlretrieve(srcpos, os.path.join(tdir, filename))
 
-                archive_format = _guess_extract_type(filename, headers.get('Content-Type', None))
+                archive_format = get_archive_type(filename, headers.get('Content-Type', None))
                 if auto_unpack and archive_format:  # unpack archive file to directory
                     if not silent:
                         print(f'Unpacking archive {filename!r}...')
@@ -164,7 +147,7 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = 
 
         else:  # is a local file
             filedir, filename = os.path.split(dstpath)
-            archive_format = _guess_extract_type(filename)
+            archive_format = get_archive_type(filename)
             if auto_unpack and archive_format and os.path.isfile(srcpos):  # is an archive file
                 if not silent:
                     print(f'Unpacking archive {filename!r}...')
@@ -179,7 +162,7 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = 
 
 @contextlib.contextmanager
 def retrieve(srcpos, auto_unpack: bool = True, silent: bool = False) -> str:
-    with _TemporaryDirectory() as td:
-        target = os.path.join(td, Link(srcpos).filename)
+    with LocalTemporaryDirectory() as td:
+        target = os.path.join(td, get_url_filename(srcpos))
         downloaded = retrieve_to_local(srcpos, target, auto_unpack=auto_unpack, silent=silent)
         yield os.path.join(downloaded)

@@ -8,7 +8,7 @@ from jinja2 import Environment
 from potc import transobj as _potc_transobj
 from potc.fixture.imports import ImportStatement
 
-from .base import RenderJob, RenderTask, DirectoryBasedTask
+from .base import RenderJob, DirectoryBasedTask
 from .imports import PyImport
 
 
@@ -18,10 +18,7 @@ class NotTemplateFile(Exception):
 
 class IGMRenderTask(DirectoryBasedTask):
     def __init__(self, srcdir: str, dststr: str, extras: Optional[Mapping[str, Any]] = None):
-        self.srcdir = srcdir
-        self.dstdir = dststr
-        self._extras = dict(extras or {})
-        RenderTask.__init__(self, list(self._yield_jobs()))
+        DirectoryBasedTask.__init__(self, srcdir, dststr, extras)
 
     def _load_job_by_file(self, relfile: str):
         srcfile = os.path.join(self.srcdir, relfile)
@@ -108,12 +105,3 @@ class TemplateJob(RenderJob):
                 f'These import statement is suggested to added in template {self.srcpath!r}:{os.linesep}'
                 f'{os.linesep.join(unimports)}'
             ))
-
-
-class ScriptJob(RenderJob):
-    def __init__(self, srcpath: str, dstpath: str, extras: Optional[Mapping[str, Any]] = None):
-        RenderJob.__init__(self, srcpath, dstpath)
-        self.__extras = dict(extras or {})
-
-    def run(self, silent: bool = False):
-        pass

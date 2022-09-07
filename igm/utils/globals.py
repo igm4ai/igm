@@ -1,7 +1,23 @@
 import inspect
 
 
-def get_global(name, default=None, stacklevel: int = 1, recursive: bool = True):
+def get_globals(stacklevel: int = 1) -> dict:
+    """
+    Overview:
+        Get globals dictionary from the outside scope.
+
+    :param stacklevel: Level of stacks when queried, default is ``1`` which means start from the outside scope of \
+        current frame.
+    :return: Globals dictionary object.
+    """
+    frame = inspect.currentframe().f_back
+    for i in range(stacklevel):
+        frame = frame.f_back
+
+    return frame.f_globals
+
+
+def get_global_env(name, default=None, stacklevel: int = 1, recursive: bool = True):
     """
     Overview:
         Get global variable from the outside scope.

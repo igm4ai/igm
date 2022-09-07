@@ -9,7 +9,7 @@ def relpath(*path):
 
 @pytest.mark.unittest
 class TestUtilsGlobal:
-    def test_get_global_simple(self):
+    def test_get_global_env_simple(self):
         d1 = {}
         with open(relpath('gf1.py'), 'r') as sf:
             exec(sf.read(), d1)
@@ -29,3 +29,10 @@ class TestUtilsGlobal:
         assert d2['TF'] == 2915443148696793
         assert d2['TF1'] == 2915443148696793
         assert d2['TF2'] == 2915443148696793
+
+    def test_globals(self):
+        d1 = {}
+        with open(relpath('gf2.py'), 'r') as sf:
+            exec(sf.read(), d1)
+
+        assert d1['v'] == 233

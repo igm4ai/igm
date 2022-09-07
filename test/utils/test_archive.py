@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 from hbutils.testing import isolated_directory
 
-from igm.utils import unpack_archive
+from igm.utils import unpack_archive, get_archive_type
 from igm.utils.archive import SevenZipExtractionNotSupported, RARExtractionNotSupported
 
 
@@ -54,3 +54,9 @@ class TestUtilsArchive:
         with isolated_directory({'testfile': 'test/testfile'}):
             with pytest.raises(RARExtractionNotSupported):
                 unpack_archive('testfile/7z_template-simple.rar', 'decompressed')
+
+    def test_get_archive_type(self):
+        assert get_archive_type('1.zip') == 'zip'
+        assert get_archive_type('1.rar') == 'rar'
+        assert get_archive_type('1.file', 'application/zip') == 'zip'
+        assert get_archive_type('1.file') is None
