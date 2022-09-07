@@ -1,6 +1,7 @@
 import builtins
 import itertools
 import os
+import sys
 import traceback
 from functools import wraps, partial
 from typing import Optional, IO, Callable
@@ -15,12 +16,12 @@ CONTEXT_SETTINGS = dict(
 
 class ClickWarningException(ClickException):
     def show(self, file: Optional[IO] = None) -> None:
-        click.secho(self.format_message(), fg='yellow')
+        click.secho(self.format_message(), fg='yellow', file=sys.stderr)
 
 
 class ClickErrorException(ClickException):
     def show(self, file: Optional[IO] = None) -> None:
-        click.secho(self.format_message(), fg='red')
+        click.secho(self.format_message(), fg='red', file=sys.stderr)
 
 
 # noinspection PyShadowingBuiltins
@@ -54,8 +55,8 @@ def command_wrap():
             except ClickException:
                 raise
             except BaseException as err:
-                click.secho('Unexpected error found when running IGM CLI!', fg='red')
-                print_exception(err, partial(click.secho, fg='red'))
+                click.secho('Unexpected error found when running IGM CLI!', fg='red', file=sys.stderr)
+                print_exception(err, partial(click.secho, fg='red', file=sys.stderr))
 
         return _new_func
 
