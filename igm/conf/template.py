@@ -6,7 +6,7 @@ from typing import Optional, Callable, Mapping, Any
 from hbutils.system import remove
 
 from .inquire import with_user_inquire, inquire_call
-from ..render import DirectoryBasedTask
+from ..render import IGMRenderTask
 from ..utils import with_pythonpath, normpath
 
 _DEFAULT_TEMPLATE_DIR = 'template'
@@ -71,7 +71,7 @@ class IGMTemplate:
         if ok:
             try:
                 with with_user_inquire(inquire_data), with_pythonpath(self.__path):
-                    task = DirectoryBasedTask(self.__template_dir, dstdir, self.__extras)
+                    task = IGMRenderTask(self.__template_dir, dstdir, self.__extras)
                     task.run(silent=silent)
                 return True
             except BaseException:

@@ -7,9 +7,8 @@ from typing import List, Dict, Any, Optional, Mapping
 from jinja2 import Environment
 from potc import transobj as _potc_transobj
 from potc.fixture.imports import ImportStatement
-from tqdm import tqdm
 
-from .base import RenderJob, RenderTask
+from .base import RenderJob, RenderTask, DirectoryBasedTask
 from .imports import PyImport
 
 
@@ -17,7 +16,7 @@ class NotTemplateFile(Exception):
     pass
 
 
-class DirectoryBasedTask(RenderTask):
+class IGMRenderTask(DirectoryBasedTask):
     def __init__(self, srcdir: str, dststr: str, extras: Optional[Mapping[str, Any]] = None):
         self.srcdir = srcdir
         self.dstdir = dststr
@@ -38,12 +37,6 @@ class DirectoryBasedTask(RenderTask):
                     yield self._load_job_by_file(curfile)
                 except NotTemplateFile:
                     pass
-
-    def _task_data(self):
-        return {
-            'srcdir': self.srcdir,
-            'dstdir': self.dstdir,
-        }
 
 
 class TemplateImportWarning(Warning):
@@ -94,12 +87,7 @@ class TemplateJob(RenderJob):
             'potc': self._transobj, 'py': PyImport(),
         }
 
-    def run(self, task_data: dict, pgbar: Optional[tqdm], silent: bool = False):
-        if not silent:
-            src_relpath = os.path.relpath(self.srcpath, start=task_data['srcdir'])
-            pgbar.set_description(f'{src_relpath}')
-            pgbar.update()
-
+    def run(self, silent: bool = False):
         with open(self.srcpath, 'r') as rf:
             template = self._environ.from_string(rf.read())
 
@@ -120,3 +108,12 @@ class TemplateJob(RenderJob):
                 f'These import statement is suggested to added in template {self.srcpath!r}:{os.linesep}'
                 f'{os.linesep.join(unimports)}'
             ))
+
+
+class ScriptJob(RenderJob):
+    def __init__(self, srcpath: str, dstpath: str, extras: Optional[Mapping[str, Any]] = None):
+        RenderJob.__init__(self, srcpath, dstpath)
+        self.__extras = dict(extras or {})
+
+    def run(self, silent: bool = False):
+        pass

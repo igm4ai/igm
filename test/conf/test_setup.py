@@ -30,7 +30,7 @@ class TestConfSetup:
     @skipUnless(not os.getenv('NO_INTERNET'), 'no internet required')
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_load_igm_setup_github(self):
-        with load_igm_setup(TEMPLATE_SIMPLE_REPO_GIT) as template:
+        with load_igm_setup(TEMPLATE_SIMPLE_REPO_GIT, silent=True) as template:
             assert isinstance(template, IGMTemplate)
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
@@ -41,7 +41,7 @@ class TestConfSetup:
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     def test_load_igm_setup_download(self):
         with load_igm_setup('https://codeload.github.com/igm4ai/template-simple/zip/refs/heads/main',
-                            'template-simple-main') as template:
+                            'template-simple-main', silent=True) as template:
             assert isinstance(template, IGMTemplate)
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION

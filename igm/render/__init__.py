@@ -1,1 +1,1 @@
-from .template import DirectoryBasedTask, TemplateJob
+from .template import TemplateJob, IGMRenderTask

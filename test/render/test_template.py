@@ -5,7 +5,7 @@ from easydict import EasyDict
 from hbutils.testing import isolated_directory, capture_output
 
 from igm.conf.inquire import with_user_inquire
-from igm.render.template import TemplateJob, DirectoryBasedTask, TemplateImportWarning
+from igm.render.template import TemplateJob, TemplateImportWarning, IGMRenderTask
 from ..testings import CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA
 
 
@@ -36,7 +36,7 @@ class TestRenderTemplate:
     def test_job_cfg_1(self, config_1):
         with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
             t = TemplateJob('template.py', 'main.py')
-            t.run({}, None, silent=True)
+            t.run(silent=True)
             with open('main.py', 'r') as rf:
                 lines = list(filter(bool, map(str.strip, rf.readlines())))
                 assert lines == [
@@ -52,7 +52,7 @@ class TestRenderTemplate:
     def test_job_cfg_2(self, config_2):
         with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
             t = TemplateJob('template.py', 'main.py')
-            t.run({}, None, silent=True)
+            t.run(silent=True)
             with open('main.py', 'r') as rf:
                 lines = list(filter(bool, map(str.strip, rf.readlines())))
                 assert lines == [
@@ -72,7 +72,7 @@ class TestRenderTemplate:
         with capture_output() as co:
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
-                    t = DirectoryBasedTask('template', 'project')
+                    t = IGMRenderTask('template', 'project')
                     assert len(t) == 2
                     t.run()
 
@@ -106,7 +106,7 @@ class TestRenderTemplate:
         with capture_output() as co:
             with with_user_inquire({'name': EasyDict({'v': 'hansbug'}), 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
-                    t = DirectoryBasedTask('template', 'project')
+                    t = IGMRenderTask('template', 'project')
                     assert len(t) == 2
                     with pytest.warns(TemplateImportWarning):
                         t.run()
