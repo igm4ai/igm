@@ -1,3 +1,5 @@
+import os
+import pathlib
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -5,8 +7,8 @@ from easydict import EasyDict
 from hbutils.testing import isolated_directory, capture_output
 
 from igm.conf.inquire import with_user_inquire
-from igm.render.template import TemplateJob, TemplateImportWarning, IGMRenderTask
-from ..testings import CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA
+from igm.render.template import TemplateJob, TemplateImportWarning, IGMRenderTask, CopyJob
+from ..testings import CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA, get_testfile_path
 
 
 @pytest.fixture()
@@ -137,3 +139,86 @@ class TestRenderTemplate:
                             'python main.py',
                             '```'
                         ]
+
+    @pytest.mark.parametrize(
+        ['fmt', 'ext'],
+        [
+            ('7z', '.7z'),
+            ('rar', '.rar'),
+            ('bztar', '.tar.bz2'),
+            ('gztar', '.tar.gz'),
+            ('tar', '.tar'),
+            ('xztar', '.tar.xz'),
+            ('zip', '.zip'),
+        ]
+    )
+    def test_copy_job(self, fmt, ext):
+        with isolated_directory({f'archive{ext}': get_testfile_path(f'{fmt}_template-simple{ext}')}):
+            archive_file = os.path.abspath(f'archive{ext}')
+            with isolated_directory():
+                job = CopyJob(archive_file, f'main{ext}')
+                job.run(silent=True)
+
+                assert os.path.exists(f'main{ext}')
+                assert pathlib.Path(archive_file).read_bytes() == \
+                       pathlib.Path(f'main{ext}').read_bytes()
+
+    @pytest.mark.parametrize(['silent'], [(True,), (False,)])
+    def test_task_test(self, config_2, silent):
+        with capture_output():
+            with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
+                with isolated_directory({'template': 'templates/test/template'}):
+                    t = IGMRenderTask('template', 'project')
+                    assert len(t) == 5
+                    t.run(silent=silent)
+
+                    with open('project/main.py', 'r') as rf:
+                        lines = list(filter(bool, map(str.strip, rf.readlines())))
+                        assert lines == [
+                            'cpus = 112',
+                            "mem_size = '944.35 GiB'",
+                            "os = 'macOS'",
+                            "python = 'CPython 3.9.4'",
+                            "cuda_version = '11.2'",
+                            'gpu_num = 2',
+
+                            "print('This is your first try!')",
+                            "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                            "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                        ]
+
+                    with open('project/.main.py', 'r') as rf:
+                        lines = list(filter(bool, map(str.strip, rf.readlines())))
+                        assert lines == [
+                            'cpus = 112',
+                            "mem_size = '944.35 GiB'",
+                            "os = 'macOS'",
+                            "python = 'CPython 3.9.4'",
+                            "cuda_version = '11.2'",
+                            'gpu_num = 2',
+
+                            "print('This is your first try!')",
+                            "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                            "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                        ]
+
+                    with open('project/README.md', 'r') as rf:
+                        lines = list(filter(bool, map(str.strip, rf.readlines())))
+                        assert lines == [
+                            '# hello world for hansbug',
+                            'This is a hello world project of igm created by \'hansbug\' (age: `24`).',
+                            'You can start this project by the following command:',
+                            '```python',
+                            'python main.py',
+                            '```'
+                        ]
+
+                    assert os.path.exists('project/raw.tar.gz')
+                    assert os.path.isfile('project/raw.tar.gz')
+                    assert pathlib.Path('project/raw.tar.gz').read_bytes() == \
+                           pathlib.Path(get_testfile_path('gztar_template-simple.tar.gz')).read_bytes()
+
+                    assert os.path.exists('project/unpacked')
+                    assert os.path.isdir('project/unpacked')
+                    assert os.path.exists('project/unpacked/README.md')
+                    assert os.path.exists('project/unpacked/meta.py')

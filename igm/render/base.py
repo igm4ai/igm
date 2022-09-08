@@ -25,9 +25,9 @@ class RenderTask(Sequence):
 
 
 class DirectoryBasedTask(RenderTask):
-    def __init__(self, srcdir: str, dststr: str, extras: Optional[Mapping[str, Any]] = None):
+    def __init__(self, srcdir: str, dstdir: str, extras: Optional[Mapping[str, Any]] = None):
         self.srcdir = srcdir
-        self.dstdir = dststr
+        self.dstdir = dstdir
         self._extras = dict(extras or {})
         RenderTask.__init__(self, list(self._yield_jobs()))
 
@@ -43,6 +43,7 @@ class DirectoryBasedTask(RenderTask):
             jobs = self
             pgbar = None
 
+        os.makedirs(self.dstdir, exist_ok=True)
         # run jobs
         for job in jobs:
             if pgbar:

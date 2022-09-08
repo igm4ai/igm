@@ -4,12 +4,16 @@ import warnings
 from functools import partial
 from typing import List, Dict, Any, Optional, Mapping
 
+from hbutils.system import copy
 from jinja2 import Environment
 from potc import transobj as _potc_transobj
 from potc.fixture.imports import ImportStatement
 
+from .archive import ArchiveUnpackJob
 from .base import RenderJob, DirectoryBasedTask
 from .imports import PyImport
+from .script import ScriptJob
+from ..utils import get_archive_type, is_binary_file, splitext
 
 
 class NotTemplateFile(Exception):
@@ -17,13 +21,38 @@ class NotTemplateFile(Exception):
 
 
 class IGMRenderTask(DirectoryBasedTask):
-    def __init__(self, srcdir: str, dststr: str, extras: Optional[Mapping[str, Any]] = None):
-        DirectoryBasedTask.__init__(self, srcdir, dststr, extras)
+    def __init__(self, srcdir: str, dstdir: str, extras: Optional[Mapping[str, Any]] = None):
+        DirectoryBasedTask.__init__(self, srcdir, dstdir, extras)
 
     def _load_job_by_file(self, relfile: str):
-        srcfile = os.path.join(self.srcdir, relfile)
-        dstfile = os.path.join(self.dstdir, relfile)
-        return TemplateJob(srcfile, dstfile, self._extras)
+        directory, filename = os.path.split(os.path.normcase(relfile))
+        if filename.startswith('.') and filename.endswith('.py'):  # script file or template
+            if filename.startswith('..'):  # ..xxx.py --> .xxx.py (template)
+                return get_common_job(
+                    os.path.join(self.srcdir, relfile),
+                    os.path.join(self.dstdir, directory, filename[1:]),
+                    self._extras
+                )
+            else:  # .xxx.py --> xxx (script)
+                body, _ = splitext(filename)
+                return ScriptJob(
+                    os.path.join(self.srcdir, relfile),
+                    os.path.join(self.dstdir, directory, body[1:]),
+                    self._extras
+                )
+        elif filename.startswith('.') and get_archive_type(filename):  # unpack archive file
+            body, _ = splitext(filename)
+            return ArchiveUnpackJob(  # .xxx.zip --> xxx (unzip)
+                os.path.join(self.srcdir, relfile),
+                os.path.join(self.dstdir, directory, body[1:]),
+                self._extras
+            )
+        else:  # common cases
+            return get_common_job(  # xxx.yy --> xxx.yy (template/binary copy)
+                os.path.join(self.srcdir, relfile),
+                os.path.join(self.dstdir, relfile),
+                self._extras
+            )
 
     def _yield_jobs(self):
         for curdir, subdirs, files in os.walk(self.srcdir):
@@ -32,8 +61,15 @@ class IGMRenderTask(DirectoryBasedTask):
                 curfile = os.path.join(cur_reldir, file)
                 try:
                     yield self._load_job_by_file(curfile)
-                except NotTemplateFile:
+                except NotTemplateFile:  # pragma: no cover
                     pass
+
+
+def get_common_job(src, dst, extras):
+    if is_binary_file(src):
+        return CopyJob(src, dst, extras)
+    else:
+        return TemplateJob(src, dst, extras)
 
 
 class TemplateImportWarning(Warning):
@@ -105,3 +141,16 @@ class TemplateJob(RenderJob):
                 f'These import statement is suggested to added in template {self.srcpath!r}:{os.linesep}'
                 f'{os.linesep.join(unimports)}'
             ))
+
+
+class CopyJob(RenderJob):
+    def __init__(self, srcpath: str, dstpath: str, extras: Optional[Mapping[str, Any]] = None):
+        RenderJob.__init__(self, srcpath, dstpath)
+        _ = extras
+
+    def _run(self):
+        dstdir, _ = os.path.split(self.dstpath)
+        if dstdir:
+            os.makedirs(dstdir, exist_ok=True)
+
+        copy(self.srcpath, self.dstpath)

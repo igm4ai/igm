@@ -67,3 +67,5 @@ testfile:
 		rm -rf $(abspath ${TESTFILE_DIR}/tar_template-simple.tar) && \
 		tar -cvf $(abspath ${TESTFILE_DIR}/tar_template-simple.tar) * && \
 		cd ../..
+	cp "$(abspath ${TESTFILE_DIR}/gztar_template-simple.tar.gz)" "$(abspath ${TEMPLATES_DIR}/test/template/raw.tar.gz)"
+	cp "$(abspath ${TESTFILE_DIR}/gztar_template-simple.tar.gz)" "$(abspath ${TEMPLATES_DIR}/test/template/.unpacked.tar.gz)"

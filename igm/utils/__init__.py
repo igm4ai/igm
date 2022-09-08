@@ -1,4 +1,5 @@
 from .archive import unpack_archive, get_archive_type
+from .file import is_binary_file, get_file_ext, splitext
 from .globals import get_global_env, get_globals
 from .path import normpath
 from .pythonpath import with_pythonpath
