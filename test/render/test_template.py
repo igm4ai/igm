@@ -8,7 +8,8 @@ from hbutils.testing import isolated_directory, capture_output
 
 from igm.conf.inquire import with_user_inquire
 from igm.render.template import TemplateJob, TemplateImportWarning, IGMRenderTask, CopyJob
-from ..testings import CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA, get_testfile_path
+from ..testings import CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA, get_testfile_path, \
+    assert_same_path
 
 
 @pytest.fixture()
@@ -170,8 +171,8 @@ class TestRenderTemplate:
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/test/template'}):
                     t = IGMRenderTask('template', 'project')
-                    assert len(t) == 7
-                    assert repr(t) == '<IGMRenderTask 7 jobs, srcdir: \'template\'>'
+                    assert len(t) == 8
+                    assert repr(t) == '<IGMRenderTask 8 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:
@@ -234,3 +235,15 @@ class TestRenderTemplate:
                     assert os.path.isdir('project/d_unpacked')
                     assert os.path.exists('project/d_unpacked/README.md')
                     assert os.path.exists('project/d_unpacked/meta.py')
+
+                    assert os.path.exists('project/script_1.ini')
+                    assert os.path.isfile('project/script_1.ini')
+                    assert pathlib.Path('project/script_1.ini').read_text().strip() == 'this is one'
+
+                    assert os.path.exists('project/script_2.txt')
+                    assert os.path.isfile('project/script_2.txt')
+                    line1, line2, line3 = pathlib.Path('project/script_2.txt').read_text() \
+                        .strip().splitlines(keepends=False)
+                    assert line1 == 'this is two'
+                    assert_same_path(os.path.join('project', line2), 'project/script')
+                    assert line3 == str(os.path.getsize('project/script_1.ini'))
