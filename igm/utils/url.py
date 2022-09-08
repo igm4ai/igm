@@ -16,7 +16,8 @@ def get_url_filename(url: str, content_type: Optional[str] = None) -> str:
     """
     url_parsed = urlparse(url)
     filename = os.path.basename(unquote(url_parsed.path))
-    if content_type:
+    _, ext = os.path.splitext(filename)
+    if content_type and not ext:
         actual_ext = mimetypes.guess_extension(content_type)
         if actual_ext and not os.path.normcase(filename).endswith(actual_ext):
             filename = f'{filename}{actual_ext}'
