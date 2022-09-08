@@ -77,6 +77,7 @@ class TestRenderTemplate:
                 with isolated_directory({'template': 'templates/simple/template'}):
                     t = IGMRenderTask('template', 'project')
                     assert len(t) == 2
+                    assert repr(t) == '<IGMRenderTask 2 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:
@@ -169,7 +170,8 @@ class TestRenderTemplate:
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/test/template'}):
                     t = IGMRenderTask('template', 'project')
-                    assert len(t) == 5
+                    assert len(t) == 7
+                    assert repr(t) == '<IGMRenderTask 7 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:
@@ -222,3 +224,13 @@ class TestRenderTemplate:
                     assert os.path.isdir('project/unpacked')
                     assert os.path.exists('project/unpacked/README.md')
                     assert os.path.exists('project/unpacked/meta.py')
+
+                    assert os.path.exists('project/d_origin.tar.gz')
+                    assert os.path.isfile('project/d_origin.tar.gz')
+                    assert pathlib.Path('project/d_origin.tar.gz').read_bytes() == \
+                           pathlib.Path(get_testfile_path('gztar_template-simple.tar.gz')).read_bytes()
+
+                    assert os.path.exists('project/d_unpacked')
+                    assert os.path.isdir('project/d_unpacked')
+                    assert os.path.exists('project/d_unpacked/README.md')
+                    assert os.path.exists('project/d_unpacked/meta.py')
