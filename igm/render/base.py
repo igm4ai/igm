@@ -1,8 +1,10 @@
 import os.path
 from collections.abc import Sequence
+from contextlib import contextmanager
 from typing import Iterable, Optional, Mapping, Any, Iterator
 
 from hbutils.string import plural_word
+from hbutils.testing import capture_output
 from tqdm import tqdm
 
 from igm.utils import tqdm_ncols
@@ -62,5 +64,24 @@ class RenderJob:
         self.srcpath = srcpath
         self.dstpath = dstpath
 
-    def run(self, silent: bool = False):
+    def _run(self):
         raise NotImplementedError  # pragma: no cover
+
+    def run(self, silent: bool = False):
+        with silent_wrapper(silent):
+            return self._run()
+
+
+@contextmanager
+def silent_wrapper(silent):
+    """
+    Overview:
+        A wrapper for silencing the output inside.
+
+    :param silent: Silent or not. If ``True``, the output will be captured and ignored.
+    """
+    if silent:
+        with capture_output():
+            yield
+    else:
+        yield

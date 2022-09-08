@@ -84,7 +84,7 @@ class TemplateJob(RenderJob):
             'potc': self._transobj, 'py': PyImport(),
         }
 
-    def run(self, silent: bool = False):
+    def _run(self):
         with open(self.srcpath, 'r') as rf:
             template = self._environ.from_string(rf.read())
 
