@@ -14,11 +14,18 @@ def with_pythonpath(*path, recover=True, recover_when_replaced=False):
     """
 
     oldpath = sys.path
+    oldmodules = sys.modules
+
     newpath = [*path, *oldpath]
+    newmodules = {key: value for key, value in sys.modules.items()}
 
     try:
         sys.path = newpath
+        sys.modules = newmodules
         yield
     finally:
-        if recover and (sys.path is newpath or recover_when_replaced):
-            sys.path = oldpath
+        if recover:
+            if sys.path is newpath or recover_when_replaced:
+                sys.path = oldpath
+            if sys.modules is newmodules or recover_when_replaced:
+                sys.modules = oldmodules

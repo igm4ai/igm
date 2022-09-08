@@ -33,10 +33,14 @@ class TestUtilsPythonPath:
             assert v['my_val1'] == 2754
             assert v['my_val2'] == 2754 ** 2
 
-            import gf1
-            assert gf1.FIXED == 2754
+            from gf1 import FIXED
+            assert FIXED == 2754
 
             val, _, _ = quick_import_object('gf1.FIXED')
             assert val == 2754
 
         assert sys.path == old_path
+
+        with with_pythonpath(os.path.normpath(os.path.join(CURDIR, '..', 'testfile'))):
+            from gf1 import FIXED
+            assert FIXED == 1234567

@@ -4,7 +4,7 @@ from unittest import skipUnless
 import pytest
 
 from igm.conf import load_igm_setup, IGMTemplate
-from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_FILE, TEMPLATE_SIMPLE_VERSION, TEMPLATE_LINEAR, \
+from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_VERSION, TEMPLATE_LINEAR, \
     TEMPLATE_LINEAR_VERSION, TEMPLATE_SIMPLE_REPO_GIT
 
 
@@ -16,12 +16,6 @@ class TestConfSetup:
                 pytest.fail('Should not reach here.')
 
         with load_igm_setup(TEMPLATE_SIMPLE) as template:
-            assert isinstance(template, IGMTemplate)
-            assert template.name == 'simple'
-            assert template.version == TEMPLATE_SIMPLE_VERSION
-            assert template.description == 'This is a simplest IGM template'
-
-        with load_igm_setup(TEMPLATE_SIMPLE_FILE) as template:
             assert isinstance(template, IGMTemplate)
             assert template.name == 'simple'
             assert template.version == TEMPLATE_SIMPLE_VERSION
