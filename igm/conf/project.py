@@ -4,9 +4,10 @@ import subprocess
 import sys
 from typing import Union, List, Any, Mapping, Optional
 
+from hbutils.reflection import mount_pythonpath
 from hbutils.string import plural_word
 
-from igm.utils import get_globals, with_pythonpath
+from ..utils import get_globals
 
 
 class IGMScript:
@@ -164,7 +165,7 @@ def load_igm_project(directory, meta_filename='igmeta.py') -> Optional[IGMProjec
         proj_dir, metafile = os.path.abspath(directory), meta_filename
 
     _globals = {}
-    with with_pythonpath(proj_dir):
+    with mount_pythonpath(proj_dir):
         with open(os.path.join(proj_dir, metafile), 'r') as f:
             exec(f.read(), _globals)
 

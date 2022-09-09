@@ -2,7 +2,6 @@ from .archive import unpack_archive, get_archive_type
 from .file import is_binary_file, get_file_ext, splitext
 from .globals import get_global_env, get_globals
 from .path import normpath
-from .pythonpath import with_pythonpath
 from .retrieve import retrieve_to_local, retrieve
 from .tqdm import tqdm_ncols
 from .url import get_url_filename, get_url_ext

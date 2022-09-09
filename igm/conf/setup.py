@@ -4,10 +4,11 @@ import os
 from typing import Dict, ContextManager, Optional, Callable, Mapping, Any
 
 from hbutils.random import random_sha1_with_timestamp
+from hbutils.reflection import mount_pythonpath
 
 from .requirement import load_req, check_req, pip
 from .template import IGMTemplate, _DEFAULT_TEMPLATE_DIR
-from ..utils import get_global_env, with_pythonpath, retrieve, normpath
+from ..utils import get_global_env, retrieve, normpath
 
 _IGM_SESSIONS: Dict[str, IGMTemplate] = {}
 _IGM_SESSION_ID_NAME = '__igm_session_id__'
@@ -62,7 +63,7 @@ def load_igm_setup(template: str, *segment: str,
             pathdir, pathfile = path, os.path.join(path, setup_filename)
 
         session_id = random_sha1_with_timestamp()
-        with with_pythonpath(pathdir):
+        with mount_pythonpath(pathdir):
             # install requirements
             _reqfile = normpath(pathdir, _DEFAULT_REQ_FILE)
             if os.path.exists(_reqfile):

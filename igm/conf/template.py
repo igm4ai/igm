@@ -3,11 +3,12 @@ import os
 from functools import partial
 from typing import Optional, Callable, Mapping, Any
 
+from hbutils.reflection import mount_pythonpath
 from hbutils.system import remove
 
 from .inquire import with_user_inquire, inquire_call
 from ..render import IGMRenderTask
-from ..utils import with_pythonpath, normpath
+from ..utils import normpath
 
 _DEFAULT_TEMPLATE_DIR = 'template'
 
@@ -70,7 +71,7 @@ class IGMTemplate:
         ok, inquire_data = inquire_call(self.__inquire)
         if ok:
             try:
-                with with_user_inquire(inquire_data), with_pythonpath(self.__path):
+                with with_user_inquire(inquire_data), mount_pythonpath(self.__path):
                     task = IGMRenderTask(self.__template_dir, dstdir, self.__extras)
                     task.run(silent=silent)
                 return True

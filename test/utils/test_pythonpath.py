@@ -2,9 +2,7 @@ import os.path
 import sys
 
 import pytest
-from hbutils.reflection import quick_import_object
-
-from igm.utils import with_pythonpath
+from hbutils.reflection import mount_pythonpath, quick_import_object
 
 CURDIR, _ = os.path.split(os.path.abspath(__file__))
 
@@ -27,7 +25,7 @@ class TestUtilsPythonPath:
             quick_import_object('gf1.FIXED')
 
         old_path = sys.path
-        with with_pythonpath(CURDIR):
+        with mount_pythonpath(CURDIR):
             v = {}
             exec(SOURCE_CODE, v)
             assert v['my_val1'] == 2754
@@ -41,6 +39,6 @@ class TestUtilsPythonPath:
 
         assert sys.path == old_path
 
-        with with_pythonpath(os.path.normpath(os.path.join(CURDIR, '..', 'testfile'))):
+        with mount_pythonpath(os.path.normpath(os.path.join(CURDIR, '..', 'testfile'))):
             from gf1 import FIXED
             assert FIXED == 1234567
