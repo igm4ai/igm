@@ -17,12 +17,8 @@ class NvidiaSmiFailed(Exception):
 
 
 @lru_cache()
-def _nvidia_smi_info(ttl_hash):
+def _nvidia_smi_info(nvidia_smi, ttl_hash):
     _ = ttl_hash
-    nvidia_smi = which('nvidia-smi')
-    if not nvidia_smi:
-        raise NvidiaSmiNotFound('nvidia-smi not found in current environment.')
-
     process = subprocess.Popen([nvidia_smi, '-x', '-q'], stdout=subprocess.PIPE)
     (stdout, stderr) = process.communicate()
     exit_code = process.wait()
@@ -38,4 +34,8 @@ def _nvidia_smi_info(ttl_hash):
 
 def get_nvidia_info():
     from .base import RESOURCE_TIMEOUT
-    return _nvidia_smi_info(int(time.time() // RESOURCE_TIMEOUT))
+    nvidia_smi = which('nvidia-smi')
+    if not nvidia_smi:
+        raise NvidiaSmiNotFound('nvidia-smi not found in current environment.')
+
+    return _nvidia_smi_info(nvidia_smi, int(time.time() // RESOURCE_TIMEOUT))
