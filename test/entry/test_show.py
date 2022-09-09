@@ -5,7 +5,7 @@ import pytest
 from click.testing import CliRunner
 
 from igm.entry import cli_entry
-from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_REPO_GIT, get_testfile_url
+from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_REPO_GIT, get_testfile_url, TEMPLATE_SIMPLE_VERSION
 
 
 @pytest.mark.unittest
@@ -15,9 +15,9 @@ class TestEntryShow:
         result = runner.invoke(cli_entry, args=['show', TEMPLATE_SIMPLE])
 
         assert result.exit_code == 0
-        assert 'Template: simple' in result.stdout
-        assert 'Version: 0.0.1' in result.stdout
-        assert 'Description: ' in result.stdout
+        assert f'Template: simple' in result.stdout
+        assert f'Version: {TEMPLATE_SIMPLE_VERSION}' in result.stdout
+        assert f'Description: ' in result.stdout
 
     @pytest.mark.parametrize(['silent'], [(True,), (False,)])
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
@@ -38,9 +38,9 @@ class TestEntryShow:
             assert 'Downloading' not in result.stdout
             assert 'Unpacking' not in result.stdout
 
-        assert 'Template: simple' in result.stdout
-        assert 'Version: 0.0.1' in result.stdout
-        assert 'Description: ' in result.stdout
+        assert f'Template: simple' in result.stdout
+        assert f'Version: {TEMPLATE_SIMPLE_VERSION}' in result.stdout
+        assert f'Description: ' in result.stdout
 
     @pytest.mark.parametrize(
         ['fmt', 'ext', 'silent'],
@@ -71,9 +71,9 @@ class TestEntryShow:
             assert 'Downloading' not in result.stdout
             assert 'Unpacking' in result.stdout
 
-        assert 'Template: simple' in result.stdout
-        assert 'Version: 0.0.1' in result.stdout
-        assert 'Description: ' in result.stdout
+        assert f'Template: simple' in result.stdout
+        assert f'Version: {TEMPLATE_SIMPLE_VERSION}' in result.stdout
+        assert f'Description: ' in result.stdout
 
     @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @pytest.mark.parametrize(
@@ -106,6 +106,6 @@ class TestEntryShow:
             assert 'Downloading' in result.stdout
             assert 'Unpacking' in result.stdout
 
-        assert 'Template: simple' in result.stdout
-        assert 'Version: 0.0.1' in result.stdout
-        assert 'Description: ' in result.stdout
+        assert f'Template: simple' in result.stdout
+        assert f'Version: {TEMPLATE_SIMPLE_VERSION}' in result.stdout
+        assert f'Description: ' in result.stdout
