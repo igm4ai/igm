@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from click.testing import CliRunner
 
-from igm.entry import cli_entry
+from igm.entry.cli import get_cli_entry
 from ..testings import TEMPLATE_SIMPLE, CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA
 
 
@@ -43,7 +43,7 @@ class TestEntryNew:
         template_simple = os.path.abspath(TEMPLATE_SIMPLE)
 
         with runner.isolated_filesystem():
-            result = runner.invoke(cli_entry, args=[
+            result = runner.invoke(get_cli_entry(), args=[
                 'new', template_simple, 'test_project'])
 
             assert result.exit_code == 0
@@ -81,7 +81,7 @@ class TestEntryNew:
 
         with runner.isolated_filesystem():
             os.makedirs('test_project')
-            result = runner.invoke(cli_entry, args=[
+            result = runner.invoke(get_cli_entry(), args=[
                 'new', template_simple, 'test_project'])
 
             assert result.exit_code == 0x10

@@ -4,7 +4,7 @@ from unittest import skipUnless
 import pytest
 from click.testing import CliRunner
 
-from igm.entry import cli_entry
+from igm.entry.cli import get_cli_entry
 from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_REPO_GIT, get_testfile_url, TEMPLATE_SIMPLE_VERSION
 
 
@@ -12,7 +12,7 @@ from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_REPO_GIT, get_testfile_u
 class TestEntryShow:
     def test_show_local(self):
         runner = CliRunner()
-        result = runner.invoke(cli_entry, args=['show', TEMPLATE_SIMPLE])
+        result = runner.invoke(get_cli_entry(), args=['show', TEMPLATE_SIMPLE])
 
         assert result.exit_code == 0
         assert f'Template: simple' in result.stdout
@@ -23,7 +23,7 @@ class TestEntryShow:
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_show_git_silent(self, silent):
         runner = CliRunner()
-        result = runner.invoke(cli_entry, args=[
+        result = runner.invoke(get_cli_entry(), args=[
             'show', TEMPLATE_SIMPLE_REPO_GIT,
             *(('--silent',) if silent else ())
         ])
@@ -56,7 +56,7 @@ class TestEntryShow:
     )
     def test_show_local_archive(self, fmt, ext, silent):
         runner = CliRunner()
-        result = runner.invoke(cli_entry, args=[
+        result = runner.invoke(get_cli_entry(), args=[
             'show', f'test/testfile/{fmt}_template-simple{ext}',
             *(('--silent',) if silent else ())
         ])
@@ -91,7 +91,7 @@ class TestEntryShow:
     @skipUnless(not os.getenv('NO_INTERNET'), 'internet required')
     def test_download_file_not_unpack(self, fmt, ext, silent):
         runner = CliRunner()
-        result = runner.invoke(cli_entry, args=[
+        result = runner.invoke(get_cli_entry(), args=[
             'show', get_testfile_url(f'{fmt}_template-simple{ext}'),
             *(('--silent',) if silent else ())
         ])
