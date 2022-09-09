@@ -78,5 +78,5 @@ def load_igm_setup(template: str, *segment: str,
                     _IGM_PATH_NAME: pathdir,
                 })
 
-        assert session_id in _IGM_SESSIONS, f'Session {session_id!r} not found.'
-        yield _IGM_SESSIONS[session_id]
+            assert session_id in _IGM_SESSIONS, f'Session {session_id!r} not found.'
+            yield _IGM_SESSIONS[session_id]
