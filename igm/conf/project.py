@@ -1,8 +1,10 @@
+import datetime
 import os.path
 import shlex
 import subprocess
 import sys
-from typing import Union, List, Any, Mapping, Optional
+from contextlib import contextmanager
+from typing import Union, List, Any, Mapping, Optional, ContextManager
 
 from hbutils.reflection import mount_pythonpath
 from hbutils.string import plural_word
@@ -121,15 +123,33 @@ def cmds(description: str, v: List) -> IGMScriptSet:
     return IGMScriptSet(*map(_to_script, v), desc=description)
 
 
+def _to_timestamp(v) -> float:
+    if isinstance(v, str):
+        return datetime.datetime.fromisoformat(v).timestamp()
+    elif isinstance(v, (int, float)):
+        return float(v)
+    else:
+        raise TypeError(f'Invalid time type - {v!r}.')
+
+
+def _timestamp_repr(v) -> str:
+    _local_timezone = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
+    return datetime.datetime.fromtimestamp(_to_timestamp(v), _local_timezone).isoformat()
+
+
 class IGMProject:
     def __init__(self, name, version, template_name, template_version, created_at, params, scripts):
         self.name = name
         self.version = version
         self.template_name = template_name
         self.template_version = template_version
-        self.created_at = created_at
+        self.created_at = _to_timestamp(created_at)
         self.params = dict(params or {})
         self.scripts = dict(scripts or {})
+
+    @property
+    def created_at_repr(self) -> str:
+        return _timestamp_repr(self.created_at)
 
 
 _IGM_PROJECT_TAG = '__igm_project__'
@@ -155,7 +175,12 @@ def igm_project(
     return proj
 
 
-def load_igm_project(directory, meta_filename='igmeta.py') -> Optional[IGMProject]:
+class NotIGMProject(Exception):
+    pass
+
+
+@contextmanager
+def load_igm_project(directory, meta_filename='igmeta.py') -> ContextManager[IGMProject]:
     if not os.path.exists(directory):
         raise FileNotFoundError(directory)
 
@@ -169,4 +194,8 @@ def load_igm_project(directory, meta_filename='igmeta.py') -> Optional[IGMProjec
         with open(os.path.join(proj_dir, metafile), 'r') as f:
             exec(f.read(), _globals)
 
-    return _globals.get(_IGM_PROJECT_TAG, None)
+        _project = _globals.get(_IGM_PROJECT_TAG, None)
+        if isinstance(_project, IGMProject):
+            yield _project
+        else:
+            raise NotIGMProject(directory)

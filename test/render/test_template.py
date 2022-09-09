@@ -77,8 +77,8 @@ class TestRenderTemplate:
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
                     t = IGMRenderTask('template', 'project')
-                    assert len(t) == 2
-                    assert repr(t) == '<IGMRenderTask 2 jobs, srcdir: \'template\'>'
+                    assert len(t) == 3
+                    assert repr(t) == '<IGMRenderTask 3 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:
@@ -107,12 +107,13 @@ class TestRenderTemplate:
                             '```'
                         ]
 
+    @patch('time.time', MagicMock(return_value=1662714925.0))
     def test_task_simple_with_easydict(self, config_2):
         with capture_output() as co:
             with with_user_inquire({'name': EasyDict({'v': 'hansbug'}), 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
                     t = IGMRenderTask('template', 'project')
-                    assert len(t) == 2
+                    assert len(t) == 3
                     with pytest.warns(TemplateImportWarning):
                         t.run()
 
@@ -140,6 +141,19 @@ class TestRenderTemplate:
                             '```python',
                             'python main.py',
                             '```'
+                        ]
+
+                    with open('project/igmeta.py', 'r') as rf:
+                        lines = list(filter(bool, map(str.strip, rf.readlines())))
+                        assert lines == [
+                            'from igm.conf import igm_project',
+                            'igm_project(',
+                            'name="{\'v\': \'hansbug\'}-simple-demo",',
+                            "version='0.3.2',",
+                            "template_name='igm-simple',",
+                            "template_version='0.0.1',",
+                            'created_at=1662714925.0,',
+                            ')'
                         ]
 
     @pytest.mark.parametrize(
@@ -171,8 +185,8 @@ class TestRenderTemplate:
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/test/template'}):
                     t = IGMRenderTask('template', 'project')
-                    assert len(t) == 8
-                    assert repr(t) == '<IGMRenderTask 8 jobs, srcdir: \'template\'>'
+                    assert len(t) == 9
+                    assert repr(t) == '<IGMRenderTask 9 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:

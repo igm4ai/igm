@@ -5,7 +5,7 @@ import pytest
 
 from igm.conf import load_igm_setup, IGMTemplate
 from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_VERSION, TEMPLATE_LINEAR, \
-    TEMPLATE_LINEAR_VERSION, TEMPLATE_SIMPLE_REPO_GIT
+    TEMPLATE_LINEAR_VERSION, TEMPLATE_SIMPLE_REPO_GIT, get_testfile_path
 
 
 @pytest.mark.unittest
@@ -47,3 +47,8 @@ class TestConfSetup:
             assert template.name == 'linear-regression'
             assert template.version == TEMPLATE_LINEAR_VERSION
             assert template.description == 'This is a IGM template for linear regression problem'
+
+    def test_load_not_template(self):
+        with pytest.raises(FileNotFoundError):
+            with load_igm_setup(get_testfile_path('.')):
+                pytest.fail('Should not reach here.')

@@ -11,11 +11,11 @@ from hbutils.system import copy
 from hbutils.testing import vpython
 from tqdm import tqdm
 
+from . import get_archive_type
 from .archive import unpack_archive
 from .path import _samepath
 from .tqdm import tqdm_ncols
 from .url import get_url_filename
-from . import get_archive_type
 from .vcs import is_vcs_url, retrieve_from_vcs
 
 if vpython >= '3.8':
@@ -163,6 +163,8 @@ def retrieve_to_local(srcpos, dstpath, auto_unpack: bool = True, silent: bool = 
 @contextlib.contextmanager
 def retrieve(srcpos, auto_unpack: bool = True, silent: bool = False) -> str:
     with LocalTemporaryDirectory() as td:
+        if os.path.exists(srcpos):
+            srcpos = os.path.normcase(os.path.normpath(os.path.abspath(srcpos)))
         target = os.path.join(td, get_url_filename(srcpos))
         downloaded = retrieve_to_local(srcpos, target, auto_unpack=auto_unpack, silent=silent)
         yield os.path.join(downloaded)
