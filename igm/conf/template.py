@@ -72,7 +72,10 @@ class IGMTemplate:
         if ok:
             try:
                 with with_user_inquire(inquire_data), mount_pythonpath(self.__path):
-                    task = IGMRenderTask(self.__template_dir, dstdir, self.__extras)
+                    task = IGMRenderTask(
+                        self.__template_dir, dstdir,
+                        {'template': self, **self.__extras}
+                    )
                     task.run(silent=silent)
                 return True
             except BaseException:

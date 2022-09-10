@@ -6,7 +6,7 @@ from click.testing import CliRunner
 
 from igm.entry.cli import get_cli_entry
 from ..testings import TEMPLATE_SIMPLE, TEMPLATE_SIMPLE_REPO_GIT, get_testfile_url, TEMPLATE_SIMPLE_VERSION, \
-    get_testfile_path
+    get_testfile_path, TEMPLATE_TEST_VERSION
 
 
 @pytest.mark.unittest
@@ -117,3 +117,27 @@ class TestEntryShow:
         assert f'Template: simple' in result.stdout
         assert f'Version: {TEMPLATE_SIMPLE_VERSION}' in result.stdout
         assert f'Description: ' in result.stdout
+
+    def test_project_info_simple(self, simple_project):
+        runner = CliRunner()
+        result = runner.invoke(get_cli_entry(), args=[
+            'show', simple_project,
+        ])
+
+        assert result.exit_code == 0
+        assert f'Name: hansbug-simple-demo' in result.stdout
+        assert f'Version: 0.3.2' in result.stdout
+        assert f'Template Name: simple' in result.stdout
+        assert f'Template Version: {TEMPLATE_SIMPLE_VERSION}' in result.stdout
+
+    def test_project_info_test(self, test_project):
+        runner = CliRunner()
+        result = runner.invoke(get_cli_entry(), args=[
+            'show', test_project,
+        ])
+
+        assert result.exit_code == 0
+        assert f'Name: hansbug-demo' in result.stdout
+        assert f'Version: 0.3.2' in result.stdout
+        assert f'Template Name: test' in result.stdout
+        assert f'Template Version: {TEMPLATE_TEST_VERSION}' in result.stdout

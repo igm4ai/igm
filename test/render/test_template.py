@@ -9,7 +9,7 @@ from hbutils.testing import isolated_directory, capture_output
 from igm.conf.inquire import with_user_inquire
 from igm.render.template import TemplateJob, TemplateImportWarning, IGMRenderTask, CopyJob
 from ..testings import CPU_INFO_1, MEMORY_INFO_2, CPU_INFO_100, MEMORY_INFO_100, TWO_GPU_DATA, get_testfile_path, \
-    assert_same_path
+    assert_same_path, TEMPLATE_SIMPLE_VERSION, TEMPLATE_TEST_VERSION
 
 
 @pytest.fixture()
@@ -76,7 +76,10 @@ class TestRenderTemplate:
         with capture_output():
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
-                    t = IGMRenderTask('template', 'project')
+                    t = IGMRenderTask(
+                        'template', 'project',
+                        extras=dict(template=EasyDict(name='simple', version=TEMPLATE_SIMPLE_VERSION)),
+                    )
                     assert len(t) == 3
                     assert repr(t) == '<IGMRenderTask 3 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
@@ -112,7 +115,10 @@ class TestRenderTemplate:
         with capture_output() as co:
             with with_user_inquire({'name': EasyDict({'v': 'hansbug'}), 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
-                    t = IGMRenderTask('template', 'project')
+                    t = IGMRenderTask(
+                        'template', 'project',
+                        extras=dict(template=EasyDict(name='simple', version=TEMPLATE_SIMPLE_VERSION)),
+                    )
                     assert len(t) == 3
                     with pytest.warns(TemplateImportWarning):
                         t.run()
@@ -150,8 +156,8 @@ class TestRenderTemplate:
                             'igm_project(',
                             'name="{\'v\': \'hansbug\'}-simple-demo",',
                             "version='0.3.2',",
-                            "template_name='igm-simple',",
-                            "template_version='0.0.1',",
+                            "template_name='simple',",
+                            f"template_version='{TEMPLATE_SIMPLE_VERSION}',",
                             'created_at=1662714925.0,',
                             ')'
                         ]
@@ -184,7 +190,10 @@ class TestRenderTemplate:
         with capture_output():
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/test/template'}):
-                    t = IGMRenderTask('template', 'project')
+                    t = IGMRenderTask(
+                        'template', 'project',
+                        extras=dict(template=EasyDict(name='test', version=TEMPLATE_TEST_VERSION)),
+                    )
                     assert len(t) == 9
                     assert repr(t) == '<IGMRenderTask 9 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)

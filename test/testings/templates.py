@@ -13,3 +13,8 @@ else:
 TEMPLATE_LINEAR = 'templates/linear-regression'
 TEMPLATE_LINEAR_FILE = 'templates/linear-regression/meta.py'
 TEMPLATE_LINEAR_VERSION = '0.0.1'
+
+# template-test
+TEMPLATE_TEST = 'templates/test'
+TEMPLATE_TEST_FILE = 'templates/test/meta.py'
+TEMPLATE_TEST_VERSION = '0.0.1'
