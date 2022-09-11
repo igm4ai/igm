@@ -95,7 +95,10 @@ class TestConfProject:
             assert echo.describe() == f'Command - echo {os.cpu_count()} cpus'
             with capture_output() as co:
                 echo.run()
-            assert co.stdout.strip().splitlines(keepends=False) == ['echo 6 cpus', '6 cpus']
+            assert co.stdout.strip().splitlines(keepends=False) == [
+                f'echo {os.cpu_count()} cpus',
+                f'{os.cpu_count()} cpus'
+            ]
             assert co.stderr.strip() == ''
 
             echox = p.scripts['echox']
