@@ -4,7 +4,7 @@ import shlex
 import subprocess
 import sys
 from contextlib import contextmanager
-from typing import Union, List, Any, Mapping, Optional, ContextManager
+from typing import Union, List, Any, Mapping, Optional, ContextManager, Dict
 
 from hbutils.reflection import mount_pythonpath
 from hbutils.string import plural_word
@@ -47,21 +47,21 @@ def _repr_command(command: Union[List[str], str]) -> str:
 
 class IGMCommandScript(IGMScript):
     def __init__(self, command: Union[List[str], str]):
-        self.command = _trans_command(command)
+        self.args = _trans_command(command)
 
     def _visual_command(self) -> List[str]:
-        return self.command
+        return self.args
 
     def describe(self) -> str:
         return f'Command - {_repr_command(self._visual_command())}'
 
     def run(self):
-        print(_repr_command(self.command))
-        process = subprocess.run(self.command)
+        print(_repr_command(self.args), flush=True)
+        process = subprocess.run(self.args, stdin=sys.stdin, stderr=sys.stderr, stdout=sys.stdout)
         try:
             process.check_returncode()
         finally:
-            print()
+            print(flush=True)
 
 
 class IGMPythonScript(IGMCommandScript):
@@ -83,7 +83,7 @@ class IGMPipScript(IGMPythonScript):
 
 
 class IGMScriptSet(IGMScript):
-    def __init__(self, *scripts, desc: Optional[str] = None):
+    def __init__(self, *scripts: 'IGMScript', desc: Optional[str] = None):
         self.scripts = scripts
         self.desc = desc
 
@@ -92,7 +92,7 @@ class IGMScriptSet(IGMScript):
 
     def run(self):
         for script in self.scripts:
-            script()
+            script.run()
 
 
 def _to_script(v):
@@ -111,12 +111,12 @@ def _to_script(v):
         raise TypeError(f'Unknown script type - {v!r}.')
 
 
-def cpy(command: Union[List[str], str]) -> IGMPythonScript:
-    return IGMPythonScript(command)
+def cpy(command: Union[List[str], str], *cmd: str) -> IGMPythonScript:
+    return IGMPythonScript([command, *cmd] if cmd else command)
 
 
-def cpip(command: Union[List[str], str]) -> IGMPipScript:
-    return IGMPipScript(command)
+def cpip(command: Union[List[str], str], *cmd: str) -> IGMPipScript:
+    return IGMPipScript([command, *cmd] if cmd else command)
 
 
 def cmds(description: str, v: List) -> IGMScriptSet:
@@ -145,7 +145,8 @@ class IGMProject:
         self.template_version = template_version
         self.created_at = _to_timestamp(created_at)
         self.params = dict(params or {})
-        self.scripts = dict(scripts or {})
+        self.scripts: Dict[Optional[str], IGMScript] = \
+            {name: _to_script(s) for name, s in (scripts or {}).items()}
 
     @property
     def created_at_repr(self) -> str:
@@ -162,7 +163,7 @@ def igm_project(
         template_version,
         created_at,
         params: Optional[Mapping[str, Any]] = None,
-        scripts: Optional[Mapping[str, Any]] = None,
+        scripts: Optional[Mapping[Optional[str], Any]] = None,
 ):
     g = get_globals()
     proj = IGMProject(

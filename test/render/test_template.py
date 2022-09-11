@@ -152,13 +152,15 @@ class TestRenderTemplate:
                     with open('project/igmeta.py', 'r') as rf:
                         lines = list(filter(bool, map(str.strip, rf.readlines())))
                         assert lines == [
-                            'from igm.conf import igm_project',
+                            'from igm.conf import igm_project, cpy',
                             'igm_project(',
                             'name="{\'v\': \'hansbug\'}-simple-demo",',
                             "version='0.3.2',",
                             "template_name='simple',",
                             f"template_version='{TEMPLATE_SIMPLE_VERSION}',",
                             'created_at=1662714925.0,',
+                            'scripts={',
+                            "None: cpy('main.py')", '}',
                             ')'
                         ]
 

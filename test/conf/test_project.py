@@ -1,11 +1,12 @@
 import os.path
+import sys
 from unittest import skipUnless
 
 import pytest
-from hbutils.testing import isolated_directory
+from hbutils.testing import isolated_directory, isolated_stdin, capture_output
 
-from igm.conf.project import load_igm_project, IGMProject, NotIGMProject
-from test.testings import TEMPLATE_SIMPLE_VERSION, TEMPLATE_TEST_VERSION
+from igm.conf.project import load_igm_project, IGMProject, NotIGMProject, IGMCommandScript
+from ..testings import TEMPLATE_SIMPLE_VERSION, TEMPLATE_TEST_VERSION
 
 
 @pytest.mark.unittest
@@ -17,6 +18,32 @@ class TestConfProject:
             assert p.version == '0.3.2'
             assert p.template_name == 'simple'
             assert p.template_version == TEMPLATE_SIMPLE_VERSION
+
+            assert set(p.scripts.keys()) == {None}
+            assert None in p.scripts
+            assert isinstance(p.scripts[None], IGMCommandScript)
+            assert p.scripts[None].args == [sys.executable, 'main.py']
+            assert p.scripts[None].describe() == 'Command - python main.py'
+
+            with isolated_directory():
+                with open('main.py', 'w') as f:
+                    f.write('print("this is main.py")\n')
+                    f.write('import time\n')
+                    f.write('time.sleep(1)\n')
+                    f.write('print("this is main.py x")\n')
+                    f.write('t = input()\n')
+                    f.write('print("this is main.py 233", t, t)\n')
+
+                with isolated_stdin(['input_text']):
+                    with capture_output() as co:
+                        p.scripts[None].run()
+
+                assert list(filter(bool, map(str.strip, co.stdout.splitlines()))) == [
+                    f'{sys.executable} main.py',
+                    f'this is main.py',
+                    f'this is main.py x',
+                    f'this is main.py 233 input_text input_text'
+                ]
 
     def test_load_igm_project_simple_with_file(self, simple_project):
         with load_igm_project(os.path.join(simple_project, 'igmeta.py')) as p:

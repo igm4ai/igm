@@ -2,9 +2,9 @@ import platform
 from subprocess import CalledProcessError
 
 import pytest
-from hbutils.testing import isolated_directory
+from hbutils.testing import isolated_directory, capture_output, disable_output
 
-from igm.conf.requirement import load_req, pip
+from igm.conf.requirement import load_req, pip, check_req
 
 
 @pytest.mark.unittest
@@ -24,20 +24,19 @@ class TestConfRequirement:
             ]
 
     def test_pip_v(self):
-        exitcode, stdout, stderr = pip('-V', capture_output=True)
-        assert exitcode == 0
+        with capture_output() as co:
+            pip('-V')
 
         major, minor, *_ = platform.python_version_tuple()
         ver = f'{major}.{minor}'
-        assert ver in stdout
-        assert 'pip' in stdout
-
-    def test_pip_v_no_capture(self):
-        exitcode, stdout, stderr = pip('-V')
-        assert exitcode == 0
-        assert stdout is None
-        assert stderr is None
+        assert ver in co.stdout
+        assert 'pip' in co.stdout
 
     def test_pip_invalid(self):
         with pytest.raises(CalledProcessError):
-            _ = pip('-FJkldfjslk', capture_output=True)
+            with disable_output():
+                _ = pip('-FJkldfjslk')
+
+    def test_check_req(self):
+        assert not check_req(['not_exist_package==3.2.1'])
+        assert check_req(['hbutils>=0.7.0', 'easydict'])
