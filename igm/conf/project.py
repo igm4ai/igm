@@ -25,7 +25,7 @@ class IGMFuncScript(IGMScript):
         self.func = func
 
     def describe(self) -> str:
-        if hasattr(self.func, '__doc__') and self.func.__doc__.strip():
+        if getattr(self.func, '__doc__', None) and self.func.__doc__.strip():
             return self.func.__doc__.strip()
         else:
             return f'Call function {self.func.__name__!r}.'
@@ -107,7 +107,7 @@ def _to_script(v):
             return IGMCommandScript(v)
         else:
             return IGMScriptSet(*map(_to_script, v))
-    else:
+    else:  # pragma: no cover
         raise TypeError(f'Unknown script type - {v!r}.')
 
 

@@ -5,7 +5,7 @@ from unittest import skipUnless
 import pytest
 from hbutils.testing import isolated_directory, isolated_stdin, capture_output
 
-from igm.conf.project import load_igm_project, IGMProject, NotIGMProject, IGMCommandScript
+from igm.conf.project import load_igm_project, IGMProject, NotIGMProject, IGMCommandScript, IGMFuncScript, IGMScriptSet
 from ..testings import TEMPLATE_SIMPLE_VERSION, TEMPLATE_TEST_VERSION
 
 
@@ -62,6 +62,55 @@ class TestConfProject:
             assert p.version == '0.3.2'
             assert p.template_name == 'test'
             assert p.template_version == TEMPLATE_TEST_VERSION
+
+            none = p.scripts[None]
+            assert isinstance(none, IGMCommandScript)
+            assert none.args == [sys.executable, 'main.py']
+            assert none.describe() == 'Command - python main.py'
+
+            install = p.scripts['install']
+            assert isinstance(install, IGMCommandScript)
+            assert install.args == [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt']
+            assert install.describe() == 'Command - pip install -r requirements.txt'
+
+            func = p.scripts['func']
+            assert isinstance(func, IGMFuncScript)
+            assert func.describe() == 'Call function \'_my_func\'.'
+            with capture_output() as co:
+                func.run()
+            assert co.stdout.strip() == 'This is my func'
+            assert co.stderr.strip() == ''
+
+            func2 = p.scripts['func2']
+            assert isinstance(func2, IGMFuncScript)
+            assert func2.describe() == 'This is another custom function'
+            with capture_output() as co:
+                func2.run()
+            assert co.stdout.strip() == ''
+            assert co.stderr.strip() == 'nuts?'
+
+            echo = p.scripts['echo']
+            assert isinstance(echo, IGMCommandScript)
+            assert echo.args == ['echo', str(os.cpu_count()), 'cpus']
+            assert echo.describe() == f'Command - echo {os.cpu_count()} cpus'
+            with capture_output() as co:
+                echo.run()
+            assert co.stdout.strip().splitlines(keepends=False) == ['echo 6 cpus', '6 cpus']
+            assert co.stderr.strip() == ''
+
+            echox = p.scripts['echox']
+            assert isinstance(echox, IGMCommandScript)
+            assert echox.args == ['echo', '1', '2', '3', '4']
+            assert echox.describe() == 'Command - echo 1 2 3 4'
+            with capture_output() as co:
+                echox.run()
+            assert co.stdout.strip().splitlines(keepends=False) == ['echo 1 2 3 4', '1 2 3 4']
+            assert co.stderr.strip() == ''
+
+            multi = p.scripts['multi']
+            assert isinstance(multi, IGMScriptSet)
+            assert len(multi.scripts) == 3
+            assert multi.describe() == 'Run a set of 3 scripts in order.'
 
     @skipUnless(not os.path.exists('/not_found_dir'), 'directory not exist required')
     def test_load_igm_project_not_found(self):
