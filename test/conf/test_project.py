@@ -38,8 +38,10 @@ class TestConfProject:
                     with capture_output() as co:
                         p.scripts[None].run()
 
-                assert list(filter(bool, map(str.strip, co.stdout.splitlines()))) == [
-                    f'{sys.executable} main.py',
+                lines = list(filter(bool, map(str.strip, co.stdout.splitlines())))
+                assert 'main.py' in lines[0]
+                assert 'python' in lines[0]
+                assert lines[1:] == [
                     f'this is main.py',
                     f'this is main.py x',
                     f'this is main.py 233 input_text input_text'
