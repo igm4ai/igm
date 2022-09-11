@@ -5,6 +5,7 @@ from typing import Dict, ContextManager, Optional, Callable, Mapping, Any
 
 from hbutils.random import random_sha1_with_timestamp
 from hbutils.reflection import mount_pythonpath
+from hbutils.testing import disable_output
 
 from .requirement import load_req, check_req, pip
 from .template import IGMTemplate, _DEFAULT_TEMPLATE_DIR
@@ -69,7 +70,12 @@ def load_igm_setup(template: str, *segment: str,
             if os.path.exists(_reqfile):
                 requirements = load_req(_reqfile)
                 if not check_req(requirements):
-                    pip('install', *requirements)
+                    args = ['install', *requirements]
+                    if silent:
+                        with disable_output():
+                            pip(*args)
+                    else:
+                        pip(*args)
 
             # load source file
             with open(pathfile, 'r') as sf:
