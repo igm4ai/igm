@@ -41,8 +41,8 @@ class TestEntryNew:
                     "This is a hello world project of igm created by 'hansbug' (age: `18`).",
                     'You can start this project by the following command:',
 
-                    '```python',
-                    'python main.py',
+                    '```shell',
+                    'igm run',
                     '```'
                 ]
 

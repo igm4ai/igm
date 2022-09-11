@@ -105,8 +105,8 @@ class TestRenderTemplate:
                             '# hello world for hansbug',
                             'This is a hello world project of igm created by \'hansbug\' (age: `24`).',
                             'You can start this project by the following command:',
-                            '```python',
-                            'python main.py',
+                            '```shell',
+                            'igm run',
                             '```'
                         ]
 
@@ -144,8 +144,8 @@ class TestRenderTemplate:
                             "# hello world for {'v': 'hansbug'}",
                             "This is a hello world project of igm created by EasyDict({'v': 'hansbug'}) (age: `24`).",
                             'You can start this project by the following command:',
-                            '```python',
-                            'python main.py',
+                            '```shell',
+                            'igm run',
                             '```'
                         ]
 
