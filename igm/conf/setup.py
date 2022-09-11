@@ -69,7 +69,7 @@ def load_igm_setup(template: str, *segment: str,
             if os.path.exists(_reqfile):
                 requirements = load_req(_reqfile)
                 if not check_req(requirements):
-                    pip('install', *requirements, capture_output=silent)
+                    pip('install', *requirements)
 
             # load source file
             with open(pathfile, 'r') as sf:
