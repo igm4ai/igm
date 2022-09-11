@@ -196,8 +196,8 @@ class TestRenderTemplate:
                         'template', 'project',
                         extras=dict(template=EasyDict(name='test', version=TEMPLATE_TEST_VERSION)),
                     )
-                    assert len(t) == 9
-                    assert repr(t) == '<IGMRenderTask 9 jobs, srcdir: \'template\'>'
+                    assert len(t) == 10
+                    assert repr(t) == '<IGMRenderTask 10 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     with open('project/main.py', 'r') as rf:
