@@ -78,7 +78,10 @@ class TestConfProject:
             assert func.describe() == 'Call function \'_my_func\'.'
             with capture_output() as co:
                 func.run()
-            assert co.stdout.strip() == 'This is my func'
+            assert co.stdout.strip().splitlines(keepends=False) == [
+                'Call function \'_my_func\'.',
+                'This is my func',
+            ]
             assert co.stderr.strip() == ''
 
             func2 = p.scripts['func2']
@@ -86,7 +89,7 @@ class TestConfProject:
             assert func2.describe() == 'This is another custom function'
             with capture_output() as co:
                 func2.run()
-            assert co.stdout.strip() == ''
+            assert co.stdout.strip() == 'This is another custom function'
             assert co.stderr.strip() == 'nuts?'
 
             echo = p.scripts['echo']
@@ -96,7 +99,7 @@ class TestConfProject:
             with capture_output() as co:
                 echo.run()
             assert co.stdout.strip().splitlines(keepends=False) == [
-                f'echo {os.cpu_count()} cpus',
+                f'Command - echo {os.cpu_count()} cpus',
                 f'{os.cpu_count()} cpus'
             ]
             assert co.stderr.strip() == ''
@@ -107,7 +110,7 @@ class TestConfProject:
             assert echox.describe() == 'Command - echo 1 2 3 4'
             with capture_output() as co:
                 echox.run()
-            assert co.stdout.strip().splitlines(keepends=False) == ['echo 1 2 3 4', '1 2 3 4']
+            assert co.stdout.strip().splitlines(keepends=False) == ['Command - echo 1 2 3 4', '1 2 3 4']
             assert co.stderr.strip() == ''
 
             multi = p.scripts['multi']
@@ -121,10 +124,11 @@ class TestConfProject:
             assert multi2.describe() == 'This is a complex operation'
             with capture_output() as co:
                 multi2.run()
-
             assert co.stdout.strip().splitlines(keepends=False) == [
+                'This is a complex operation',
+                "1. Call function '_my_func'.",
                 'This is my func',
-                'echo 233',
+                '2. Command - echo 233',
                 '233'
             ]
             assert co.stderr.strip() == ''

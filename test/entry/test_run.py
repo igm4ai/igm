@@ -75,9 +75,17 @@ class TestEntryRun:
     def test_simple_default(self, simple_project_dir):
         result = simulate_entry(get_cli_entry(), ['igm', 'run'])
         result.assert_okay()
-
         stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
         assert stdout_lines[1:] == [
+            'This is your first try!',
+            'UR running PyPy 3.7.12 on Windows, with a 6 core 63.76 GiB device.',
+        ]
+        assert result.stderr.strip() == ''
+
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', '-L'])
+        result.assert_okay()
+        stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
+        assert stdout_lines == [
             'This is your first try!',
             'UR running PyPy 3.7.12 on Windows, with a 6 core 63.76 GiB device.',
         ]
@@ -86,9 +94,17 @@ class TestEntryRun:
     def test_test_default(self, test_project_dir):
         result = simulate_entry(get_cli_entry(), ['igm', 'run'])
         result.assert_okay()
-
         stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
         assert stdout_lines[1:] == [
+            'This is your first try!',
+            'UR running PyPy 3.7.12 on Windows, with a 6 core 63.76 GiB device.',
+        ]
+        assert result.stderr.strip() == ''
+
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', '-L'])
+        result.assert_okay()
+        stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
+        assert stdout_lines == [
             'This is your first try!',
             'UR running PyPy 3.7.12 on Windows, with a 6 core 63.76 GiB device.',
         ]
@@ -97,9 +113,13 @@ class TestEntryRun:
     def test_test_subcommands(self, test_project_dir):
         result = simulate_entry(get_cli_entry(), ['igm', 'run', 'func'])
         result.assert_okay()
-
         stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
-        assert stdout_lines == ['This is my func', ]
+        assert stdout_lines == ['Call function \'_my_func\'.', 'This is my func']
+
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', 'func', '-L'])
+        result.assert_okay()
+        stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
+        assert stdout_lines == ['This is my func']
 
     def test_fake_without_default(self, project_without_default_dir):
         result = simulate_entry(get_cli_entry(), ['igm', 'run'])
@@ -117,7 +137,7 @@ class TestEntryRun:
         result = simulate_entry(get_cli_entry(), ['igm', 'run', 'f'])
         assert result.exitcode == 0x1
         assert result.error is None
-        assert result.stdout.strip() == ''
+        assert result.stdout.strip() == 'Call function \'f\'.'
         assert 'Unexpected error found when running IGM CLI!' in result.stderr
         assert 'ValueError: 233' in result.stderr
 

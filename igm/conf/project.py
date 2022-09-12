@@ -1,9 +1,11 @@
+import builtins
 import datetime
 import os.path
 import shlex
 import subprocess
 import sys
 from contextlib import contextmanager
+from functools import partial
 from typing import Union, List, Any, Mapping, Optional, ContextManager, Dict
 
 from hbutils.reflection import mount_pythonpath
@@ -16,7 +18,16 @@ class IGMScript:
     def describe(self) -> str:
         raise NotImplementedError  # pragma: no cover
 
-    def run(self):
+    def run(self, pfunc=None):
+        self._run_with_wrapper(pfunc)
+
+    def _run_with_wrapper(self, pfunc=None, prefix=None):
+        pfunc = pfunc or partial(builtins.print, flush=True)
+        title = self.describe() if not prefix else f'{prefix} {self.describe()}'
+        pfunc(title)
+        self._run()
+
+    def _run(self):
         raise NotImplementedError  # pragma: no cover
 
 
@@ -30,7 +41,7 @@ class IGMFuncScript(IGMScript):
         else:
             return f'Call function {self.func.__name__!r}.'
 
-    def run(self):
+    def _run(self):
         self.func()
 
 
@@ -55,13 +66,9 @@ class IGMCommandScript(IGMScript):
     def describe(self) -> str:
         return f'Command - {_repr_command(self._visual_command())}'
 
-    def run(self):
-        print(_repr_command(self.args), flush=True)
+    def _run(self):
         process = subprocess.run(self.args, stdin=sys.stdin, stderr=sys.stderr, stdout=sys.stdout)
-        try:
-            process.check_returncode()
-        finally:
-            print(flush=True)
+        process.check_returncode()
 
 
 class IGMPythonScript(IGMCommandScript):
@@ -90,9 +97,19 @@ class IGMScriptSet(IGMScript):
     def describe(self) -> str:
         return self.desc or f'Run a set of {plural_word(len(self.scripts), "scripts")} in order.'
 
-    def run(self):
-        for script in self.scripts:
-            script.run()
+    def _run_with_wrapper(self, pfunc=None, prefix=None):
+        pfunc = pfunc or partial(builtins.print, flush=True)
+        title = self.describe() if not prefix else f'{prefix} {self.describe()}'
+        pfunc(title)
+        try:
+            for i, script in enumerate(self.scripts, start=1):
+                new_prefix = f'{prefix}{i}.' if prefix else f'{i}.'
+                script._run_with_wrapper(pfunc, new_prefix)
+        finally:
+            print(flush=True)
+
+    def _run(self):
+        raise NotImplementedError  # pragma: no cover
 
 
 def _to_script(v):

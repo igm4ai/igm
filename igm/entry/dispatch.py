@@ -6,9 +6,9 @@ from ..config.meta import __TITLE__, __VERSION__, __AUTHOR__, __AUTHOR_EMAIL__
 
 _raw_authors = [item.strip() for item in __AUTHOR__.split(',') if item.strip()]
 _raw_emails = [item.strip() for item in __AUTHOR_EMAIL__.split(',')]
-if len(_raw_emails) < len(_raw_authors):
+if len(_raw_emails) < len(_raw_authors):  # pragma: no cover
     _raw_emails += [None] * (len(_raw_authors) - len(_raw_emails))
-elif len(_raw_emails) > len(_raw_authors):
+elif len(_raw_emails) > len(_raw_authors):  # pragma: no cover
     _raw_emails[len(_raw_authors) - 1] = tuple(_raw_emails[len(_raw_authors) - 1:])
     del _raw_emails[len(_raw_authors):]
 

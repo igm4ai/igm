@@ -37,13 +37,24 @@ class NoDefaultScript(ClickWarningException):
     exit_code = 0x31
 
 
+def title_print(*args):
+    click.secho(*args, bold=True, fg='magenta', nl=True)
+    click.secho(nl=False)
+
+
+def no_print(*args):
+    _ = args
+
+
 def script_append(cli: click.Group, name: str, script: IGMScript):
     @cli.command(name, help=script.describe(), context_settings=CONTEXT_SETTINGS)
+    @click.option('-L', '--no-label', 'no_label', is_flag=True, default=False,
+                  help='Do not show the labels of each step.', show_default=True)
     @command_wrap()
-    def _command():
+    def _command(no_label: bool):
         with _current_project() as (path, proj):
             os.chdir(path)
-            proj.scripts[name].run()
+            proj.scripts[name].run(title_print if not no_label else no_print)
 
 
 def _run_cli(cli: click.Group):
@@ -60,13 +71,15 @@ def _run_cli(cli: click.Group):
                 @cli.group('run', help='Run script of the IGM project.\n\n'
                                        f'Default: {p.scripts[None].describe()}',
                            context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
+                @click.option('-L', '--no-label', 'no_label', is_flag=True, default=False,
+                              help='Do not show the labels of each step.', show_default=True)
                 @click.pass_context
                 @command_wrap()
-                def _run(ctx):
+                def _run(ctx, no_label: bool):
                     if ctx.invoked_subcommand is None:
                         with _current_project() as (path, proj):
                             os.chdir(path)
-                            proj.scripts[None].run()
+                            proj.scripts[None].run(title_print if not no_label else no_print)
 
             else:
                 @cli.group('run', help='Run script of the IGM project.',
