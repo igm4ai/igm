@@ -1,6 +1,8 @@
+import os
+
 from InquirerPy import inquirer
 
-from igm.conf import InquireRestart
+from igm.conf import InquireRestart, InquireCancel
 from igm.env import env
 
 _LAST_NAME = ""
@@ -9,6 +11,9 @@ _LAST_GENDER = "Male"
 
 
 def inquire_func():
+    if os.environ.get('CANCEL'):
+        raise InquireCancel
+
     global _LAST_AGE, _LAST_NAME, _LAST_GENDER
 
     name = env.NAME or inquirer.text(message="What's your name:", default=_LAST_NAME).execute()

@@ -1,10 +1,11 @@
 import os.path
+from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
 
 from igm.entry.cli import get_cli_entry
-from ..testings import TEMPLATE_SIMPLE
+from ..testings import TEMPLATE_SIMPLE, TEMPLATE_TEST
 
 
 @pytest.mark.unittest
@@ -57,3 +58,15 @@ class TestEntryNew:
 
             assert result.exit_code == 0x10
             assert 'Path \'test_project\' already exist, unable to create project.' in result.stderr
+
+    def test_new_cancelled(self, sys_config_1, hansbug_env):
+        runner = CliRunner(mix_stderr=False)
+        template_test = os.path.abspath(TEMPLATE_TEST)
+
+        with runner.isolated_filesystem(), patch.dict('os.environ', {'CANCEL': '1'}, clear=False):
+            result = runner.invoke(get_cli_entry(), args=[
+                'new', template_test, 'test_project'])
+
+            assert result.exit_code == 0x11
+            assert result.stdout.strip() == 'Cancelled.'
+            assert result.stderr.strip() == 'Project creation cancelled.'

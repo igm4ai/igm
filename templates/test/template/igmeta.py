@@ -12,6 +12,18 @@ def _another_func():
     print('nuts?', file=sys.stderr)
 
 
+def e1():
+    raise ValueError
+
+
+def e2():
+    raise KeyError('key error')
+
+
+def e3():
+    raise TypeError('type', 'error', 233)
+
+
 igm_project(
     name={{ (user.name | str + '-demo') | potc }},
     version='0.3.2',
@@ -36,6 +48,9 @@ igm_project(
                 _my_func,
                 'echo 233'
             ]
-        )
+        ),
+        'e1': e1,
+        'e2': e2,
+        'e3': e3,
     }
 )

@@ -121,6 +121,25 @@ class TestEntryRun:
         stdout_lines = list(filter(bool, map(str.strip, result.stdout.splitlines())))
         assert stdout_lines == ['This is my func']
 
+    def test_test_print_error(self, test_project_dir):
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', 'e1'])
+        assert result.exitcode == 0x1
+        assert result.error is None
+        assert result.stdout.strip() == 'Call function \'e1\'.'
+        assert result.stderr.strip().splitlines(keepends=False)[-1] == 'ValueError'
+
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', 'e2'])
+        assert result.exitcode == 0x1
+        assert result.error is None
+        assert result.stdout.strip() == 'Call function \'e2\'.'
+        assert result.stderr.strip().splitlines(keepends=False)[-1] == 'KeyError: key error'
+
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', 'e3'])
+        assert result.exitcode == 0x1
+        assert result.error is None
+        assert result.stdout.strip() == 'Call function \'e3\'.'
+        assert result.stderr.strip().splitlines(keepends=False)[-1] == 'TypeError: (\'type\', \'error\', 233)'
+
     def test_fake_without_default(self, project_without_default_dir):
         result = simulate_entry(get_cli_entry(), ['igm', 'run'])
         assert result.exitcode == 0x31
