@@ -15,3 +15,9 @@ def run2(dst):
         print('this is two', file=f)
         print(dst, file=f)
         print(os.path.getsize('script_1.ini'), file=f)
+
+
+@igm_script
+def err(dst):
+    if os.environ.get('MAKE_ERROR'):
+        raise ValueError('This is the error')

@@ -1,6 +1,6 @@
 import sys
 
-from igm.conf import igm_project, cpy, cpip
+from igm.conf import igm_project, cpy, cpip, cmds
 
 
 def _my_func():
@@ -17,7 +17,7 @@ igm_project(
     version='0.3.2',
     template_name={{ template.name | potc }},
     template_version={{ template.version | potc }},
-    created_at={{ py.time.time() | potc }},
+    created_at={{ py.time.time() | trepr | potc }},
     scripts={
         None: cpy('main.py'),
         'install': cpip('install', '-r', 'requirements.txt'),
@@ -29,6 +29,13 @@ igm_project(
             _my_func,
             'echo 233',
             cpy('-V'),
-        ]
+        ],
+        'multi2': cmds(
+            'This is a complex operation',
+            [
+                _my_func,
+                'echo 233'
+            ]
+        )
     }
 )

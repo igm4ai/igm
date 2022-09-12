@@ -2,6 +2,7 @@ import os
 from unittest.mock import patch, MagicMock
 
 import pytest
+from time_machine import travel
 
 from igm.conf import load_igm_setup
 from igm.utils.retrieve import LocalTemporaryDirectory
@@ -39,25 +40,35 @@ def hansbug_env():
 
 @pytest.fixture()
 def time_2022_9_9():
-    with patch('time.time', MagicMock(return_value=1662714925.0)):
+    with travel(1662714925.0):
         yield
 
 
 @pytest.fixture()
-def simple_project(hansbug_env, sys_config_1, time_2022_9_9):
-    with LocalTemporaryDirectory() as tdir:
-        with load_igm_setup(TEMPLATE_SIMPLE, silent=True) as t:
-            proj_dir = os.path.join(tdir, 'simple')
-            assert t.run(proj_dir, silent=True)
-
-            yield proj_dir
+def simple_template(hansbug_env, sys_config_1, time_2022_9_9):
+    with load_igm_setup(TEMPLATE_SIMPLE, silent=True) as t:
+        yield t
 
 
 @pytest.fixture()
-def test_project(hansbug_env, sys_config_1, time_2022_9_9):
-    with LocalTemporaryDirectory() as tdir:
-        with load_igm_setup(TEMPLATE_TEST, silent=True) as t:
-            proj_dir = os.path.join(tdir, 'test')
-            assert t.run(proj_dir, silent=True)
+def test_template(hansbug_env, sys_config_1, time_2022_9_9):
+    with load_igm_setup(TEMPLATE_TEST, silent=True) as t:
+        yield t
 
-            yield proj_dir
+
+@pytest.fixture()
+def simple_project(simple_template):
+    with LocalTemporaryDirectory() as tdir:
+        proj_dir = os.path.join(tdir, 'simple')
+        assert simple_template.run(proj_dir, silent=True)
+
+        yield proj_dir
+
+
+@pytest.fixture()
+def test_project(test_template):
+    with LocalTemporaryDirectory() as tdir:
+        proj_dir = os.path.join(tdir, 'test')
+        assert test_template.run(proj_dir, silent=True)
+
+        yield proj_dir

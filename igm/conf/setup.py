@@ -47,8 +47,6 @@ def igm_setup(
     )
     if session_id is not None:
         _IGM_SESSIONS[session_id] = retval
-    else:
-        retval.print_info()
 
     return retval
 
@@ -58,10 +56,7 @@ def load_igm_setup(template: str, *segment: str,
                    setup_filename='meta.py', silent: bool = False) -> ContextManager[IGMTemplate]:
     with retrieve(template, silent=silent) as path:
         path = os.path.abspath(os.path.join(path, *segment))
-        if os.path.isfile(path):
-            (pathdir, _), pathfile = os.path.split(path), path
-        else:
-            pathdir, pathfile = path, os.path.join(path, setup_filename)
+        pathdir, pathfile = path, os.path.join(path, setup_filename)
 
         session_id = random_sha1_with_timestamp()
         with mount_pythonpath(pathdir):

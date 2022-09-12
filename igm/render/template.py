@@ -81,8 +81,13 @@ class TemplateJob(RenderJob):
         RenderJob.__init__(self, srcpath, dstpath)
         self._imps: List[ImportStatement] = []
         self._builtins = {name: getattr(builtins, name) for name in dir(builtins) if not (name.startswith('_'))}
-        self._environ = self._create_environ()
         self._extras = dict(extras or {})
+        self._environ = self._create_environ()
+
+    def _yield_extra_funcs(self):
+        for name, func in self._extras.items():
+            if callable(func):
+                yield name, func
 
     def _create_environ(self):
         environ = Environment(autoescape=False)
@@ -97,6 +102,10 @@ class TemplateJob(RenderJob):
 
         environ.filters['potc'] = self._transobj
         environ.tests['None'] = lambda x: x is None
+
+        for name, func in self._yield_extra_funcs():
+            environ.filters[name] = func
+            environ.tests[name] = func
 
         return environ
 

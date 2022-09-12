@@ -115,6 +115,20 @@ class TestConfProject:
             assert len(multi.scripts) == 3
             assert multi.describe() == 'Run a set of 3 scripts in order.'
 
+            multi2 = p.scripts['multi2']
+            assert isinstance(multi2, IGMScriptSet)
+            assert len(multi2.scripts) == 2
+            assert multi2.describe() == 'This is a complex operation'
+            with capture_output() as co:
+                multi2.run()
+
+            assert co.stdout.strip().splitlines(keepends=False) == [
+                'This is my func',
+                'echo 233',
+                '233'
+            ]
+            assert co.stderr.strip() == ''
+
     @skipUnless(not os.path.exists('/not_found_dir'), 'directory not exist required')
     def test_load_igm_project_not_found(self):
         with pytest.raises(FileNotFoundError):

@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from unittest.mock import patch, MagicMock
 
 import pytest
+from time_machine import travel
 
 from igm.conf import load_igm_setup
 from igm.utils.retrieve import LocalTemporaryDirectory
@@ -41,7 +42,7 @@ def hansbug_env():
 
 @pytest.fixture()
 def time_2022_9_9():
-    with patch('time.time', MagicMock(return_value=1662714925.0)):
+    with travel(1662714925.0):
         yield
 
 

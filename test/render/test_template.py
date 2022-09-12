@@ -4,7 +4,8 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 from easydict import EasyDict
-from hbutils.testing import isolated_directory, capture_output
+from hbutils.testing import isolated_directory, capture_output, tmatrix
+from time_machine import travel
 
 from igm.conf.inquire import with_user_inquire
 from igm.render.template import TemplateJob, TemplateImportWarning, IGMRenderTask, CopyJob
@@ -110,7 +111,7 @@ class TestRenderTemplate:
                             '```'
                         ]
 
-    @patch('time.time', MagicMock(return_value=1662714925.0))
+    @travel(1662714925.0)
     def test_task_simple_with_easydict(self, config_2):
         with capture_output() as co:
             with with_user_inquire({'name': EasyDict({'v': 'hansbug'}), 'age': 24, 'gender': 'Male'}):
@@ -158,7 +159,7 @@ class TestRenderTemplate:
                             "version='0.3.2',",
                             "template_name='simple',",
                             f"template_version='{TEMPLATE_SIMPLE_VERSION}',",
-                            'created_at=1662714925.0,',
+                            'created_at=1662714925,',
                             'scripts={',
                             "None: cpy('main.py')", '}',
                             ')'
@@ -187,14 +188,17 @@ class TestRenderTemplate:
                 assert pathlib.Path(archive_file).read_bytes() == \
                        pathlib.Path(f'main{ext}').read_bytes()
 
-    @pytest.mark.parametrize(['silent'], [(True,), (False,)])
+    @pytest.mark.parametrize(*tmatrix({'silent': [True, False]}))
     def test_task_test(self, config_2, silent):
         with capture_output():
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/test/template'}):
                     t = IGMRenderTask(
                         'template', 'project',
-                        extras=dict(template=EasyDict(name='test', version=TEMPLATE_TEST_VERSION)),
+                        extras=dict(
+                            template=EasyDict(name='test', version=TEMPLATE_TEST_VERSION),
+                            trepr=int,
+                        ),
                     )
                     assert len(t) == 10
                     assert repr(t) == '<IGMRenderTask 10 jobs, srcdir: \'template\'>'
