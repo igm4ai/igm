@@ -1,6 +1,7 @@
 import pytest
+from hbutils.system import is_binary_file
 
-from igm.utils import is_binary_file, get_file_ext, splitext
+from igm.utils import get_file_ext, splitext
 from ..testings import get_testfile_path
 
 

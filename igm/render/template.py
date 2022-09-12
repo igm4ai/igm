@@ -4,7 +4,7 @@ import warnings
 from functools import partial
 from typing import List, Dict, Any, Optional, Mapping
 
-from hbutils.system import copy
+from hbutils.system import copy, is_binary_file
 from jinja2 import Environment
 from potc import transobj as _potc_transobj
 from potc.fixture.imports import ImportStatement
@@ -13,7 +13,7 @@ from .archive import ArchiveUnpackJob
 from .base import RenderJob, DirectoryBasedTask
 from .imports import PyImport
 from .script import ScriptJob
-from ..utils import get_archive_type, is_binary_file, splitext
+from ..utils import get_archive_type, splitext
 
 
 class NotTemplateFile(Exception):
