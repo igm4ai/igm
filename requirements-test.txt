@@ -16,4 +16,3 @@ where>=1.0.2
 rarfile>=3
 py7zr>=0.19
 time-machine>=2.8.1
-backports.zoneinfo>=0.2.1
