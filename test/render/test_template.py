@@ -188,6 +188,7 @@ class TestRenderTemplate:
                             template=EasyDict(name='test', version=TEMPLATE_TEST_VERSION),
                             trepr=int,
                             wtf=lambda x, y: f'wtf: {x} + {y} = {x + y}',
+                            project_dir=os.path.abspath('project'),
                         ),
                     )
                     assert len(t) == 13
@@ -269,12 +270,13 @@ class TestRenderTemplate:
                     assert os.path.exists('project/script_2.txt')
                     assert os.path.isfile('project/script_2.txt')
                     lines = text_align_no_empty.splitlines(pathlib.Path('project/script_2.txt').read_text())
-                    line1, line2, line3, line4, line5 = lines
+                    line1, line2, line3, line4, line5, line6 = lines
                     assert line1 == 'this is two'
                     assert_same_path(os.path.join('project', line2), 'project/script')
                     assert line3 == 'wtf: 103 + 279 = 382'
-                    assert line4 == '[\'template\', \'trepr\', \'wtf\']'
-                    assert line5 == str(os.path.getsize('project/script_1.ini'))
+                    assert line4 == '[\'project_dir\', \'template\', \'trepr\', \'wtf\']'
+                    assert_same_path(line5, 'project')
+                    assert line6 == str(os.path.getsize('project/script_1.ini'))
 
                     assert os.path.exists('project/nested/1/2/4/script_1.ini')
                     assert os.path.isfile('project/nested/1/2/4/script_1.ini')
@@ -288,7 +290,7 @@ class TestRenderTemplate:
                     assert line1 == 'this is two'
                     assert_same_path(os.path.join('project', line2), 'project/script')
                     assert line3 == 'wtf: 103 + 279 = 382'
-                    assert line4 == '[\'template\', \'trepr\', \'wtf\']'
+                    assert line4 == '[\'project_dir\', \'template\', \'trepr\', \'wtf\']'
                     assert line5 == str(os.path.getsize('project/nested/1/2/4/script_1.ini'))
 
                     assert os.path.exists('project/nested/1/2/5/d_unpacked')
