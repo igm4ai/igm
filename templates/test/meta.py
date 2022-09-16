@@ -1,6 +1,6 @@
 from igm.conf import igm_setup
 from inquirer import inquire_func
-from utils import trepr
+from utils import trepr, wtf
 
 igm_setup(
     name='test',
@@ -8,6 +8,7 @@ igm_setup(
     description='Just a test template for IGM.',
     inquire=inquire_func,
     extras={
-        'trepr': trepr
+        'trepr': trepr,
+        'wtf': wtf,
     }
 )

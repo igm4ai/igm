@@ -13,3 +13,7 @@ def _to_timestamp(v) -> float:
 def trepr(v) -> str:
     _local_timezone = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
     return datetime.datetime.fromtimestamp(_to_timestamp(v), _local_timezone).isoformat()
+
+
+def wtf(a, b) -> str:
+    return f'wtf: {a} + {b} = {a + b}'

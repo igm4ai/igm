@@ -1,11 +1,14 @@
 import os
 import shutil
+import sys
+import textwrap
 from contextlib import contextmanager
 from functools import wraps
-from typing import Optional, Mapping, Any, ContextManager, Tuple
+from types import ModuleType
+from typing import Optional, Mapping, Any, ContextManager, Tuple, Iterable
 from urllib.request import urlretrieve
 
-from hbutils.reflection import dynamic_call
+from hbutils.reflection import dynamic_call, mount_pythonpath
 
 from .base import RenderJob
 from ..utils import tqdm_ncols, get_globals, get_url_filename, get_archive_type, get_url_ext
@@ -71,25 +74,47 @@ def download(url, auto_unpack: bool = True):
     return _download_file
 
 
+class _ExtrasModule(ModuleType):
+    def __init__(self, extras: Mapping[str, Any]) -> None:
+        ModuleType.__init__(self, 'extras', textwrap.dedent("""
+        This is a fake module for extra items.
+        """))
+        self.__extras = extras
+        self.__all__ = sorted(extras.keys())
+
+    def __getattr__(self, item):
+        if item in self.__extras:
+            self.__dict__[item] = self.__extras[item]
+            return self.__extras[item]
+        else:
+            raise AttributeError(f'module {self.__name__!r} has no attribute {item!r}')
+
+    def __dir__(self) -> Iterable[str]:
+        return self.__all__
+
+
 class ScriptJob(RenderJob):
     def __init__(self, srcpath: str, dstpath: str, extras: Optional[Mapping[str, Any]] = None):
         RenderJob.__init__(self, srcpath, dstpath)
         self.__extras = dict(extras or {})
 
     def _run(self):
-        meta = {}
-        with open(self.srcpath, 'r', encoding='utf-8') as f:
-            exec(f.read(), meta)
+        with mount_pythonpath():
+            sys.modules['extras'] = _ExtrasModule(self.__extras)
+            meta = {}
+            with open(self.srcpath, 'r', encoding='utf-8') as f:
+                exec(f.read(), meta)
 
-        script = meta.get(_SCRIPT_TAG, None)
-        if script:
-            abs_dstpath = os.path.abspath(self.dstpath)
-            dstdir, dstfile = os.path.split(abs_dstpath)
-            curdir = os.path.abspath(os.curdir)
+            script = meta.get(_SCRIPT_TAG, None)
+            if script:
+                abs_dstpath = os.path.abspath(self.dstpath)
+                dstdir, dstfile = os.path.split(abs_dstpath)
+                curdir = os.path.abspath(os.curdir)
 
-            try:
-                rel_dstpath = os.path.relpath(abs_dstpath, start=dstdir)
-                os.chdir(dstdir)
-                script(rel_dstpath, **self.__extras)
-            finally:
-                os.chdir(curdir)
+                try:
+                    rel_dstpath = os.path.relpath(abs_dstpath, start=dstdir)
+                    os.chdir(dstdir)
+                    # noinspection PyCallingNonCallable
+                    script(rel_dstpath, **self.__extras)
+                finally:
+                    os.chdir(curdir)

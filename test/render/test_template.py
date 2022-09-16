@@ -37,43 +37,41 @@ def config_2():
 
 @pytest.mark.unittest
 class TestRenderTemplate:
-    def test_job_cfg_1(self, config_1):
+    def test_job_cfg_1(self, config_1, text_align_no_empty):
         with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
             t = TemplateJob('template.py', 'main.py')
             t.run(silent=True)
-            with open('main.py', 'r') as rf:
-                lines = list(filter(bool, map(str.strip, rf.readlines())))
-                assert lines == [
-                    'cpus = 6',
-                    "mem_size = '63.76 GiB'",
-                    "os = 'Windows'",
-                    "python = 'PyPy 3.7.12'",
 
-                    "print('This is your first try!')",
-                    "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')"
-                ]
+            text_align_no_empty.assert_equal(pathlib.Path('main.py').read_text(), [
+                'cpus = 6',
+                "mem_size = '63.76 GiB'",
+                "os = 'Windows'",
+                "python = 'PyPy 3.7.12'",
 
-    def test_job_cfg_2(self, config_2):
+                "print('This is your first try!')",
+                "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')"
+            ])
+
+    def test_job_cfg_2(self, config_2, text_align_no_empty):
         with isolated_directory({'template.py': 'templates/simple/template/main.py'}):
             t = TemplateJob('template.py', 'main.py')
             t.run(silent=True)
-            with open('main.py', 'r') as rf:
-                lines = list(filter(bool, map(str.strip, rf.readlines())))
-                assert lines == [
-                    'cpus = 112',
-                    "mem_size = '944.35 GiB'",
-                    "os = 'macOS'",
-                    "python = 'CPython 3.9.4'",
-                    "cuda_version = '11.2'",
-                    'gpu_num = 2',
 
-                    "print('This is your first try!')",
-                    "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
-                    "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
-                ]
+            text_align_no_empty.assert_equal(pathlib.Path('main.py').read_text(), [
+                'cpus = 112',
+                "mem_size = '944.35 GiB'",
+                "os = 'macOS'",
+                "python = 'CPython 3.9.4'",
+                "cuda_version = '11.2'",
+                'gpu_num = 2',
+
+                "print('This is your first try!')",
+                "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+            ])
 
     @pytest.mark.parametrize(['silent'], [(True,), (False,)])
-    def test_task_simple(self, config_2, silent):
+    def test_task_simple(self, config_2, silent, text_align_no_empty):
         with capture_output():
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
@@ -85,35 +83,31 @@ class TestRenderTemplate:
                     assert repr(t) == '<IGMRenderTask 3 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
-                    with open('project/main.py', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            'cpus = 112',
-                            "mem_size = '944.35 GiB'",
-                            "os = 'macOS'",
-                            "python = 'CPython 3.9.4'",
-                            "cuda_version = '11.2'",
-                            'gpu_num = 2',
+                    text_align_no_empty.assert_equal(pathlib.Path('project/main.py').read_text(), [
+                        'cpus = 112',
+                        "mem_size = '944.35 GiB'",
+                        "os = 'macOS'",
+                        "python = 'CPython 3.9.4'",
+                        "cuda_version = '11.2'",
+                        'gpu_num = 2',
 
-                            "print('This is your first try!')",
-                            "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
-                            "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
-                        ]
+                        "print('This is your first try!')",
+                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                        "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                    ])
 
-                    with open('project/README.md', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            '# hello world for hansbug',
-                            'This is a hello world project of igm created by \'hansbug\' (age: `24`).',
-                            'You can start this project by the following command:',
-                            '```shell',
-                            'igm run',
-                            '```'
-                        ]
+                    text_align_no_empty.assert_equal(pathlib.Path('project/README.md').read_text(), [
+                        '# hello world for hansbug',
+                        'This is a hello world project of igm created by \'hansbug\' (age: `24`).',
+                        'You can start this project by the following command:',
+                        '```shell',
+                        'igm run',
+                        '```'
+                    ])
 
     @travel(1662714925.0)
-    def test_task_simple_with_easydict(self, config_2):
-        with capture_output() as co:
+    def test_task_simple_with_easydict(self, config_2, text_align_no_empty):
+        with capture_output():
             with with_user_inquire({'name': EasyDict({'v': 'hansbug'}), 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/simple/template'}):
                     t = IGMRenderTask(
@@ -124,46 +118,41 @@ class TestRenderTemplate:
                     with pytest.warns(TemplateImportWarning):
                         t.run()
 
-                    with open('project/main.py', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            'cpus = 112',
-                            "mem_size = '944.35 GiB'",
-                            "os = 'macOS'",
-                            "python = 'CPython 3.9.4'",
-                            "cuda_version = '11.2'",
-                            'gpu_num = 2',
+                    text_align_no_empty.assert_equal(pathlib.Path('project/main.py').read_text(), [
+                        'cpus = 112',
+                        "mem_size = '944.35 GiB'",
+                        "os = 'macOS'",
+                        "python = 'CPython 3.9.4'",
+                        "cuda_version = '11.2'",
+                        'gpu_num = 2',
 
-                            "print('This is your first try!')",
-                            "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
-                            "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
-                        ]
+                        "print('This is your first try!')",
+                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                        "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                    ])
 
-                    with open('project/README.md', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            "# hello world for {'v': 'hansbug'}",
-                            "This is a hello world project of igm created by EasyDict({'v': 'hansbug'}) (age: `24`).",
-                            'You can start this project by the following command:',
-                            '```shell',
-                            'igm run',
-                            '```'
-                        ]
+                    text_align_no_empty.assert_equal(pathlib.Path('project/README.md').read_text(), [
+                        "# hello world for {'v': 'hansbug'}",
+                        "This is a hello world project of igm created by EasyDict({'v': 'hansbug'}) (age: `24`).",
+                        'You can start this project by the following command:',
+                        '```shell',
+                        'igm run',
+                        '```'
+                    ])
 
-                    with open('project/igmeta.py', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            'from igm.conf import igm_project, cpy',
-                            'igm_project(',
-                            'name="{\'v\': \'hansbug\'}-simple-demo",',
-                            "version='0.3.2',",
-                            "template_name='simple',",
-                            f"template_version='{TEMPLATE_SIMPLE_VERSION}',",
-                            'created_at=1662714925,',
-                            'scripts={',
-                            "None: cpy('main.py')", '}',
-                            ')'
-                        ]
+                    text_align_no_empty.assert_equal(pathlib.Path('project/igmeta.py').read_text(), [
+                        f'from igm.conf import igm_project, cpy',
+                        f'igm_project(',
+                        '    name="{\'v\': \'hansbug\'}-simple-demo",',
+                        f"    version='0.3.2',",
+                        f"    template_name='simple',",
+                        f"    template_version='{TEMPLATE_SIMPLE_VERSION}',",
+                        f'    created_at=1662714925,',
+                        r'    scripts={',
+                        r"        None: cpy('main.py')",
+                        r'    }',
+                        r')'
+                    ])
 
     @pytest.mark.parametrize(
         ['fmt', 'ext'],
@@ -189,7 +178,7 @@ class TestRenderTemplate:
                        pathlib.Path(f'main{ext}').read_bytes()
 
     @pytest.mark.parametrize(*tmatrix({'silent': [True, False]}))
-    def test_task_test(self, config_2, silent):
+    def test_task_test(self, config_2, silent, text_align_no_empty):
         with capture_output():
             with with_user_inquire({'name': 'hansbug', 'age': 24, 'gender': 'Male'}):
                 with isolated_directory({'template': 'templates/test/template'}):
@@ -198,52 +187,47 @@ class TestRenderTemplate:
                         extras=dict(
                             template=EasyDict(name='test', version=TEMPLATE_TEST_VERSION),
                             trepr=int,
+                            wtf=lambda x, y: f'wtf: {x} + {y} = {x + y}',
                         ),
                     )
                     assert len(t) == 10
                     assert repr(t) == '<IGMRenderTask 10 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
-                    with open('project/main.py', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            'cpus = 112',
-                            "mem_size = '944.35 GiB'",
-                            "os = 'macOS'",
-                            "python = 'CPython 3.9.4'",
-                            "cuda_version = '11.2'",
-                            'gpu_num = 2',
+                    text_align_no_empty.assert_equal(pathlib.Path('project/main.py').read_text(), [
+                        'cpus = 112',
+                        "mem_size = '944.35 GiB'",
+                        "os = 'macOS'",
+                        "python = 'CPython 3.9.4'",
+                        "cuda_version = '11.2'",
+                        'gpu_num = 2',
 
-                            "print('This is your first try!')",
-                            "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
-                            "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
-                        ]
+                        "print('This is your first try!')",
+                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                        "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                    ])
 
-                    with open('project/.main.py', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            'cpus = 112',
-                            "mem_size = '944.35 GiB'",
-                            "os = 'macOS'",
-                            "python = 'CPython 3.9.4'",
-                            "cuda_version = '11.2'",
-                            'gpu_num = 2',
+                    text_align_no_empty.assert_equal(pathlib.Path('project/.main.py').read_text(), [
+                        'cpus = 112',
+                        "mem_size = '944.35 GiB'",
+                        "os = 'macOS'",
+                        "python = 'CPython 3.9.4'",
+                        "cuda_version = '11.2'",
+                        'gpu_num = 2',
 
-                            "print('This is your first try!')",
-                            "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
-                            "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
-                        ]
+                        "print('This is your first try!')",
+                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                        "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                    ])
 
-                    with open('project/README.md', 'r') as rf:
-                        lines = list(filter(bool, map(str.strip, rf.readlines())))
-                        assert lines == [
-                            '# hello world for hansbug',
-                            'This is a hello world project of igm created by \'hansbug\' (age: `24`).',
-                            'You can start this project by the following command:',
-                            '```python',
-                            'python main.py',
-                            '```'
-                        ]
+                    text_align_no_empty.assert_equal(pathlib.Path('project/README.md').read_text(), [
+                        '# hello world for hansbug',
+                        'This is a hello world project of igm created by \'hansbug\' (age: `24`).',
+                        'You can start this project by the following command:',
+                        '```python',
+                        'python main.py',
+                        '```'
+                    ])
 
                     assert os.path.exists('project/raw.tar.gz')
                     assert os.path.isfile('project/raw.tar.gz')
@@ -271,8 +255,10 @@ class TestRenderTemplate:
 
                     assert os.path.exists('project/script_2.txt')
                     assert os.path.isfile('project/script_2.txt')
-                    line1, line2, line3 = pathlib.Path('project/script_2.txt').read_text() \
-                        .strip().splitlines(keepends=False)
+                    lines = text_align_no_empty.splitlines(pathlib.Path('project/script_2.txt').read_text())
+                    line1, line2, line3, line4, line5 = lines
                     assert line1 == 'this is two'
                     assert_same_path(os.path.join('project', line2), 'project/script')
-                    assert line3 == str(os.path.getsize('project/script_1.ini'))
+                    assert line3 == 'wtf: 103 + 279 = 382'
+                    assert line4 == '[\'template\', \'trepr\', \'wtf\']'
+                    assert line5 == str(os.path.getsize('project/script_1.ini'))
