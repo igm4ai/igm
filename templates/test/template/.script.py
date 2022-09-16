@@ -1,5 +1,8 @@
 import os
 
+import extras
+from extras import wtf
+
 from igm.render import igm_script
 
 
@@ -14,6 +17,8 @@ def run2(dst):
     with open('script_2.txt', 'w') as f:
         print('this is two', file=f)
         print(dst, file=f)
+        print(wtf(103, 279), file=f)
+        print(sorted(dir(extras)), file=f)
         print(os.path.getsize('script_1.ini'), file=f)
 
 
