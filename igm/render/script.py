@@ -113,6 +113,8 @@ class ScriptJob(RenderJob):
 
                 try:
                     rel_dstpath = os.path.relpath(abs_dstpath, start=dstdir)
+                    if dstdir:
+                        os.makedirs(dstdir, exist_ok=True)
                     os.chdir(dstdir)
                     # noinspection PyCallingNonCallable
                     script(rel_dstpath, **self.__extras)
