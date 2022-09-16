@@ -190,8 +190,8 @@ class TestRenderTemplate:
                             wtf=lambda x, y: f'wtf: {x} + {y} = {x + y}',
                         ),
                     )
-                    assert len(t) == 10
-                    assert repr(t) == '<IGMRenderTask 10 jobs, srcdir: \'template\'>'
+                    assert len(t) == 13
+                    assert repr(t) == '<IGMRenderTask 13 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     text_align_no_empty.assert_equal(pathlib.Path('project/main.py').read_text(), [
@@ -229,6 +229,19 @@ class TestRenderTemplate:
                         '```'
                     ])
 
+                    text_align_no_empty.assert_equal(pathlib.Path('project/nested/1/2/3/main.py').read_text(), [
+                        'cpus = 112',
+                        "mem_size = '944.35 GiB'",
+                        "os = 'macOS'",
+                        "python = 'CPython 3.9.4'",
+                        "cuda_version = '11.2'",
+                        'gpu_num = 2',
+
+                        "print('This is your first try!')",
+                        "print(f'UR running {python} on {os}, with a {cpus} core {mem_size} device.')",
+                        "print(f'CUDA {cuda_version} is also detected, with {gpu_num} gpu(s).')"
+                    ])
+
                     assert os.path.exists('project/raw.tar.gz')
                     assert os.path.isfile('project/raw.tar.gz')
                     assert pathlib.Path('project/raw.tar.gz').read_bytes() == \
@@ -262,3 +275,23 @@ class TestRenderTemplate:
                     assert line3 == 'wtf: 103 + 279 = 382'
                     assert line4 == '[\'template\', \'trepr\', \'wtf\']'
                     assert line5 == str(os.path.getsize('project/script_1.ini'))
+
+                    assert os.path.exists('project/nested/1/2/4/script_1.ini')
+                    assert os.path.isfile('project/nested/1/2/4/script_1.ini')
+                    assert pathlib.Path('project/nested/1/2/4/script_1.ini').read_text().strip() == 'this is one'
+
+                    assert os.path.exists('project/nested/1/2/4/script_2.txt')
+                    assert os.path.isfile('project/nested/1/2/4/script_2.txt')
+                    lines = text_align_no_empty.splitlines(
+                        pathlib.Path('project/nested/1/2/4/script_2.txt').read_text())
+                    line1, line2, line3, line4, line5 = lines
+                    assert line1 == 'this is two'
+                    assert_same_path(os.path.join('project', line2), 'project/script')
+                    assert line3 == 'wtf: 103 + 279 = 382'
+                    assert line4 == '[\'template\', \'trepr\', \'wtf\']'
+                    assert line5 == str(os.path.getsize('project/nested/1/2/4/script_1.ini'))
+
+                    assert os.path.exists('project/nested/1/2/5/d_unpacked')
+                    assert os.path.isdir('project/nested/1/2/5/d_unpacked')
+                    assert os.path.exists('project/nested/1/2/5/d_unpacked/README.md')
+                    assert os.path.exists('project/nested/1/2/5/d_unpacked/meta.py')
