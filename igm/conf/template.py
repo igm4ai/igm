@@ -74,7 +74,11 @@ class IGMTemplate:
                 with with_user_inquire(inquire_data), mount_pythonpath(self.__path):
                     task = IGMRenderTask(
                         self.__template_dir, dstdir,
-                        {'template': self, **self.__extras}
+                        {
+                            'template': self,
+                            'project_dir': os.path.abspath(dstdir),
+                            **self.__extras
+                        }
                     )
                     task.run(silent=silent)
                 return True

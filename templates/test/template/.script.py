@@ -1,7 +1,7 @@
 import os
 
 import extras
-from extras import wtf
+from extras import wtf, project_dir
 
 from igm.render import igm_script
 
@@ -19,6 +19,7 @@ def run2(dst):
         print(dst, file=f)
         print(wtf(103, 279), file=f)
         print(sorted(dir(extras)), file=f)
+        print(project_dir, file=f)
         print(os.path.getsize('script_1.ini'), file=f)
 
 
