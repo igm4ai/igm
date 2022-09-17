@@ -24,12 +24,16 @@ def e3():
     raise TypeError('type', 'error', 233)
 
 
+def ki():
+    raise KeyboardInterrupt
+
+
 igm_project(
-    name={{ (user.name | str + '-demo') | potc }},
+    name={{(user.name | str + '-demo') | potc}},
     version='0.3.2',
-    template_name={{ template.name | potc }},
-    template_version={{ template.version | potc }},
-    created_at={{ py.time.time() | trepr | potc }},
+    template_name={{template.name | potc}},
+    template_version={{template.version | potc}},
+    created_at={{py.time.time() | trepr | potc}},
     scripts={
         None: cpy('main.py'),
         'install': cpip('install', '-r', 'requirements.txt'),
@@ -52,5 +56,6 @@ igm_project(
         'e1': e1,
         'e2': e2,
         'e3': e3,
+        'ki': ki,
     }
 )

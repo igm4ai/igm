@@ -46,6 +46,13 @@ def print_exception(err: BaseException, print: Optional[Callable] = None):
         print(f'{type(err).__name__}: {err.args}')
 
 
+class KeyboardInterrupted(ClickWarningException):
+    exit_code = 0x7
+
+    def __init__(self, msg=None):
+        ClickWarningException.__init__(self, msg or 'Interrupted.')
+
+
 def command_wrap():
     def _decorator(func):
         @wraps(func)
@@ -54,6 +61,8 @@ def command_wrap():
                 return func(*args, **kwargs)
             except ClickException:
                 raise
+            except KeyboardInterrupt:
+                raise KeyboardInterrupted
             except BaseException as err:
                 click.secho('Unexpected error found when running IGM CLI!', fg='red', file=sys.stderr)
                 print_exception(err, partial(click.secho, fg='red', file=sys.stderr))

@@ -140,6 +140,12 @@ class TestEntryRun:
         assert result.stdout.strip() == 'Call function \'e3\'.'
         assert result.stderr.strip().splitlines(keepends=False)[-1] == 'TypeError: (\'type\', \'error\', 233)'
 
+        result = simulate_entry(get_cli_entry(), ['igm', 'run', 'ki'])
+        assert result.exitcode == 0x7
+        assert result.error is None
+        assert result.stdout.strip() == 'Call function \'ki\'.'
+        assert result.stderr.strip() == 'Interrupted.'
+
     def test_fake_without_default(self, project_without_default_dir):
         result = simulate_entry(get_cli_entry(), ['igm', 'run'])
         assert result.exitcode == 0x31
