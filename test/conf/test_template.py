@@ -110,6 +110,11 @@ Located at {normpath('test/utils')!r}.
             assert os.path.exists('project/d_unpacked/README.md')
             assert os.path.exists('project/d_unpacked/meta.py')
 
+            assert os.path.exists('project/d_subdir')
+            assert os.path.isdir('project/d_subdir')
+            assert os.path.exists('project/d_subdir/README.md')
+            assert os.path.exists('project/d_subdir/igmeta.py')
+
             assert os.path.exists('project/script_1.ini')
             assert os.path.isfile('project/script_1.ini')
             assert pathlib.Path('project/script_1.ini').read_text().strip() == 'this is one'

@@ -57,14 +57,18 @@ def _download_to_temp(url) -> ContextManager[Tuple[str, Optional[str]]]:
 
 
 @igm_script_build
-def download(url, auto_unpack: bool = True):
+def download(url, *, subdir='.', auto_unpack: bool = True):
     def _download_file(dst):
         path, fname = os.path.split(dst)
         with _download_to_temp(url) as (tfile, content_type):
             _archive_type = get_archive_type(get_url_filename(url, content_type), content_type)
             if auto_unpack and _archive_type:
-                os.makedirs(dst, exist_ok=True)
-                shutil.unpack_archive(tfile, dst, _archive_type)
+                os.makedirs(os.path.normpath(os.path.join(dst, '..')), exist_ok=True)
+                with LocalTemporaryDirectory() as tdir:
+                    archive_dir = os.path.join(tdir, 'archive')
+                    os.makedirs(archive_dir, exist_ok=True)
+                    shutil.unpack_archive(tfile, archive_dir, _archive_type)
+                    shutil.move(os.path.normpath(os.path.join(archive_dir, subdir)), dst)
             else:
                 _ext = get_url_ext(url, content_type)
                 if _ext and not os.path.normcase(fname).endswith(_ext):

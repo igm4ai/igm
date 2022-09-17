@@ -191,8 +191,8 @@ class TestRenderTemplate:
                             project_dir=os.path.abspath('project'),
                         ),
                     )
-                    assert len(t) == 13
-                    assert repr(t) == '<IGMRenderTask 13 jobs, srcdir: \'template\'>'
+                    assert len(t) == 14
+                    assert repr(t) == '<IGMRenderTask 14 jobs, srcdir: \'template\'>'
                     t.run(silent=silent)
 
                     text_align_no_empty.assert_equal(pathlib.Path('project/main.py').read_text(), [
@@ -262,6 +262,11 @@ class TestRenderTemplate:
                     assert os.path.isdir('project/d_unpacked')
                     assert os.path.exists('project/d_unpacked/README.md')
                     assert os.path.exists('project/d_unpacked/meta.py')
+
+                    assert os.path.exists('project/d_subdir')
+                    assert os.path.isdir('project/d_subdir')
+                    assert os.path.exists('project/d_subdir/README.md')
+                    assert os.path.exists('project/d_subdir/igmeta.py')
 
                     assert os.path.exists('project/script_1.ini')
                     assert os.path.isfile('project/script_1.ini')
