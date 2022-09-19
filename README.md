@@ -77,6 +77,12 @@ The detailed documentation is still preparing, but you can take a look at the fo
 * [Test Template](https://github.com/igm4ai/igm/tree/main/templates/test), a test template for unittest of igm tools,
   more advanced usage can be found here.
 
+For information on template syntax, see the following:
+
+* [Jinja2](https://jinja.palletsprojects.com/en/3.1.x/), the template render framework we used in IGM.
+* [potc](https://github.com/potc-dev/potc), transform any object to readable python object, will be useful when render
+  python source code. It is integrated into IGM with a filter named `potc`.
+
 ## Contributing
 
 We appreciate all contributions to improve `igm`, both logic and system designs. Please refer to CONTRIBUTING.md
