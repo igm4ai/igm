@@ -7,7 +7,7 @@ TEMPLATE_SIMPLE_VERSION = '0.0.1'
 if _has_github():
     TEMPLATE_SIMPLE_REPO_GIT = f'git+https://{GITHUB_HOST}/igm4ai/template-simple.git'
 else:
-    TEMPLATE_SIMPLE_REPO_GIT = f'git+https://gitee.com/hansbug/template-simple.git'
+    TEMPLATE_SIMPLE_REPO_GIT = f'git+https://gitee.com/igm4ai/template-simple.git'
 
 # template-linear
 TEMPLATE_LINEAR = 'templates/linear-regression'
