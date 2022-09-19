@@ -39,13 +39,43 @@ pip install . --user
 
 ## Quick Start for HPO
 
-Here is a simple example:
+Here is a simple example to create a hello world project:
 
-```python
-if __name__ == '__main__':
-    print('IGM is still under development')
-
+```shell
+igm new git+https://github.com/igm4ai/template-simple helloword  # create helloworld project
+cd helloword
+igm run  # run the helloworld project
 ```
+
+## What Happened?
+
+After you enter the `igm new <template> <proj_dir>` command to your terminal, igm operate as the following stages:
+
+1. **Initialization Stage** - Check the template, if remote url or repository detected, download it to local storage.
+2. **Project Creation Stage**
+    1. **Load Step** - Load the template's meta information.
+    2. **Inquire Step** - Ask the user to provide some necessary.
+    3. **Build Step** - Build the project based on the template, the project will be placed at `<proj_dir>`.
+3. **Project Use Stage**
+    * (Optional) **Prerequisite Installation** - run `igm run install` command to install the dependencies.
+    * **Code Run** - run `igm run` command to run the main project code.
+    * **What Scripts Are Provided?** - run `igm run -h` to see the list of provided scripts.
+    * (Optional) Other custom scripts - you can use the other scripts provided by template, or custom the extra scripts
+      in `igmeta.py`.
+
+## How to Create A New Project Template
+
+The detailed documentation is still preparing, but you can take a look at the following examples:
+
+* [template-simple](https://github.com/igm4ai/template-simple), a helloworld template example
+* [template-linear-regression](https://github.com/igm4ai/template-linear-regression), a more advanced example of linear
+  regression problem, with visualization example
+* [template-resnet18](https://github.com/igm4ai/template-resnet18), template for resnet18, including resource download
+  and usage of tensorboard
+* [IGM-di](https://github.com/PaParaZz1/IGM-di), example of usage of DI-engine, including custom complex generating of
+  training code
+* [Test Template](https://github.com/igm4ai/igm/tree/main/templates/test), a test template for unittest of igm tools,
+  more advanced usage can be found here.
 
 ## Contributing
 
