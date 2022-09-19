@@ -37,14 +37,16 @@ jobs:
         run: |
           python -m build --sdist --wheel --outdir dist/
       - name: Publish distribution 📦 to real PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_PASSWORD }}
+          packages_dir: dist/
+          skip_existing: true  # remove this line when next time releasing
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: conf/*
+          file: dist/*
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
