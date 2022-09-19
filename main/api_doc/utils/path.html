@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>igm.utils &mdash; igm 0.0.1 documentation</title>
+  <title>igm.utils.path &mdash; igm 0.0.1 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="igm.utils.globals" href="globals.html" />
-    <link rel="prev" title="igm.config.meta" href="../config/meta.html" /> 
+    <link rel="next" title="igm.utils.tqdm" href="tqdm.html" />
+    <link rel="prev" title="igm.utils.globals" href="globals.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,9 +95,12 @@
 <p><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../config/index.html">igm.config</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">igm.utils</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">igm.utils</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="globals.html">igm.utils.globals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="path.html">igm.utils.path</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">igm.utils.path</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#normpath">normpath</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="tqdm.html">igm.utils.tqdm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url.html">igm.utils.url</a></li>
 </ul>
@@ -147,13 +150,15 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-      <li>igm.utils</li>
+          <li><a href="index.html">igm.utils</a> &raquo;</li>
+        
+      <li>igm.utils.path</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/api_doc/utils/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/api_doc/utils/path.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -168,30 +173,43 @@
             
     
     
-  <section id="module-igm.utils">
-<span id="igm-utils"></span><h1>igm.utils<a class="headerlink" href="#module-igm.utils" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="globals.html">igm.utils.globals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="globals.html#get-global-env">get_global_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="globals.html#get-globals">get_globals</a></li>
+  <section id="module-igm.utils.path">
+<span id="igm-utils-path"></span><h1>igm.utils.path<a class="headerlink" href="#module-igm.utils.path" title="Permalink to this headline">¶</a></h1>
+<section id="normpath">
+<h2>normpath<a class="headerlink" href="#normpath" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="igm.utils.path.normpath">
+<code class="sig-prename descclassname">igm.utils.path.</code><code class="sig-name descname">normpath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../../_modules/igm/utils/path.html#normpath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#igm.utils.path.normpath" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Overview:</dt><dd><p>Normalize the path to a unique format which is comparable by <code class="docutils literal notranslate"><span class="pre">==</span></code>.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – First path segment.</p></li>
+<li><p><strong>paths</strong> – Following segments.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="path.html">igm.utils.path</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="path.html#normpath">normpath</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tqdm.html">igm.utils.tqdm</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tqdm.html#tqdm-ncols">tqdm_ncols</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="url.html">igm.utils.url</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="url.html#get-url-filename">get_url_filename</a></li>
-<li class="toctree-l2"><a class="reference internal" href="url.html#get-url-ext">get_url_ext</a></li>
-</ul>
-</li>
-</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Full absolute path.</p>
+</dd>
+</dl>
+<dl>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">igm.utils</span> <span class="kn">import</span> <span class="n">normpath</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normpath</span><span class="p">(</span><span class="s1">&#39;./file&#39;</span><span class="p">)</span>
+<span class="go">&#39;/home/user/igm/file&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normpath</span><span class="p">(</span><span class="s1">&#39;/home/file&#39;</span><span class="p">)</span>
+<span class="go">&#39;/home/file&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normpath</span><span class="p">(</span><span class="s1">&#39;~/file&#39;</span><span class="p">)</span>
+<span class="go">&#39;/home/user/file&#39;</span>
+</pre></div>
 </div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -203,10 +221,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="globals.html" class="btn btn-neutral float-right" title="igm.utils.globals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tqdm.html" class="btn btn-neutral float-right" title="igm.utils.tqdm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../config/meta.html" class="btn btn-neutral float-left" title="igm.config.meta" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="globals.html" class="btn btn-neutral float-left" title="igm.utils.globals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -239,9 +257,9 @@
         <div class="rst-other-versions">
                 <dl>
                     <dt>Branches</dt>
-                        <dd><a href="index.html">main</a></dd>
-                        <dd><a href="../../../dev/fix/api_doc/utils/index.html">dev/fix</a></dd>
-                        <dd><a href="../../../doc/readme/api_doc/utils/index.html">doc/readme</a></dd>
+                        <dd><a href="path.html">main</a></dd>
+                        <dd><a href="../../../dev/fix/index.html">dev/fix</a></dd>
+                        <dd><a href="../../../doc/readme/index.html">doc/readme</a></dd>
                 </dl>
         </div>
     </div>
