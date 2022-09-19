@@ -14,6 +14,15 @@ def get_url_filename(url: str, content_type: Optional[str] = None) -> str:
     :param url: Original url.
     :param content_type: Content-Type information from remote.
     :return: Filename with correct extension name.
+
+    Examples::
+        >>> from igm.utils import get_url_filename
+        >>> get_url_filename('http://mysite.com/files/filename.csv')
+        'filename.csv'
+        >>> get_url_filename('http://mysite.com/files/filename', 'application/pdf')
+        'filename.pdf'
+        >>> get_url_filename('http://mysite.com/files/filename.csv', 'application/pdf')
+        'filename.csv'
     """
     url_parsed = urlparse(url)
     filename = os.path.basename(unquote(url_parsed.path))
@@ -34,6 +43,15 @@ def get_url_ext(url: str, content_type: Optional[str] = None) -> str:
     :param url: Original url.
     :param content_type: Content-Type information from remote.
     :return: File extension, including ``.tar.gz``.
+
+    Examples::
+        >>> from igm.utils import get_url_ext
+        >>> get_url_ext('http://mysite.com/files/filename.csv')
+        '.csv'
+        >>> get_url_ext('http://mysite.com/files/filename', 'application/pdf')
+        '.pdf'
+        >>> get_url_ext('http://mysite.com/files/filename.tar.gz')
+        '.tar.gz'
     """
     filename = get_url_filename(url, content_type)
     return get_file_ext(filename)

@@ -9,10 +9,21 @@ def normpath(path: str, *paths: str) -> str:
     :param path: First path segment.
     :param paths: Following segments.
     :return: Full absolute path.
+    
+    Examples::
+        >>> from igm.utils import normpath
+        >>> normpath('./file')
+        '/home/user/igm/file'
+        >>> normpath('/home/file')
+        '/home/file'
+        >>> normpath('~/file')
+        '/home/user/file'
     """
-    return os.path.normcase(os.path.normpath(
-        os.path.abspath(os.path.join(path, *paths))
-    ))
+    return os.path.normcase(os.path.normpath(os.path.abspath(
+        os.path.expandvars(os.path.expanduser(
+            os.path.join(path, *paths)
+        ))
+    )))
 
 
 def _samepath(src, dst) -> bool:

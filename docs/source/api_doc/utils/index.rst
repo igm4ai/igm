@@ -10,5 +10,8 @@ igm.utils
     :maxdepth: 3
 
     globals
+    path
+    tqdm
+    url
 
 

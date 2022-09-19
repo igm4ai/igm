@@ -7,9 +7,17 @@ igm.utils.globals
 
 
 
-get_global
+get_global_env
 ------------------------
 
-.. autofunction:: get_global
+.. autofunction:: get_global_env
+
+
+
+get_globals
+------------------------
+
+.. autofunction:: get_globals
+
 
 
