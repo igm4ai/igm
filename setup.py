@@ -5,11 +5,12 @@ from distutils.core import setup
 
 from setuptools import find_packages
 
-_package_name = "igm"
+_MODULE_NAME = "igm"
+_PACKAGE_NAME = 'sci-igm'
 
 here = os.path.abspath(os.path.dirname(__file__))
 meta = {}
-with open(os.path.join(here, _package_name, 'config', 'meta.py'), 'r', 'utf-8') as f:
+with open(os.path.join(here, _MODULE_NAME, 'config', 'meta.py'), 'r', 'utf-8') as f:
     exec(f.read(), meta)
 
 
@@ -31,9 +32,9 @@ with open('README.md', 'r', 'utf-8') as f:
 
 setup(
     # information
-    name=meta['__TITLE__'],
+    name=_PACKAGE_NAME,
     version=meta['__VERSION__'],
-    packages=find_packages(include=(_package_name, "%s.*" % _package_name)),
+    packages=find_packages(include=(_MODULE_NAME, "%s.*" % _MODULE_NAME)),
     package_data={
         package_name: ['*.yaml', '*.yml']
         for package_name in find_packages(include=('*'))

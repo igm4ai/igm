@@ -21,12 +21,14 @@
 
 IGM (Intelligence Guidance Manager for AI).
 
+The ultimate purpose of AI is to serve science (as ai4science does), so let's call it ``sci-igm``.
+
 ## Installation
 
 You can simply install it with `pip` command line from the official PyPI site.
 
 ```shell
-pip install igm
+pip install sci-igm
 ```
 
 Or install from latest source code as follows:
@@ -37,7 +39,7 @@ cd igm
 pip install . --user
 ```
 
-## Quick Start for HPO
+## Quick Start for IGM
 
 Here is a simple example to create a hello world project:
 
