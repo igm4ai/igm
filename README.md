@@ -1,7 +1,7 @@
 # igm
 
-[![PyPI](https://img.shields.io/pypi/v/igm)](https://pypi.org/project/igm/)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/igm)
+[![PyPI](https://img.shields.io/pypi/v/sci-igm)](https://pypi.org/project/sci-igm/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sci-igm)
 ![Loc](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/HansBug/99cb08da2773e37cc1338ae8be12d798/raw/loc.json)
 ![Comments](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/HansBug/99cb08da2773e37cc1338ae8be12d798/raw/comments.json)
 
