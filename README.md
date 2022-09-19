@@ -71,7 +71,7 @@ The detailed documentation is still preparing, but you can take a look at the fo
 
 * [template-simple](https://github.com/igm4ai/template-simple), a helloworld template example
 * [template-linear-regression](https://github.com/igm4ai/template-linear-regression), a more advanced example of linear
-  regression problem, with visualization example
+  regression problem, **with visualization example**
 * [template-resnet18](https://github.com/igm4ai/template-resnet18), template for resnet18, including resource download
   and usage of tensorboard
 * [IGM-di](https://github.com/PaParaZz1/IGM-di), example of usage of DI-engine, including custom complex generating of
