@@ -10,6 +10,5 @@ igm.utils
     :maxdepth: 3
 
     globals
-    pythonpath
 
 
