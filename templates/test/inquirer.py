@@ -1,5 +1,6 @@
 import os
 
+import pandas as pd  # Test the usage of pandas
 from InquirerPy import inquirer
 
 from igm.conf import InquireRestart, InquireCancel
@@ -11,6 +12,7 @@ _LAST_GENDER = "Male"
 
 
 def inquire_func():
+    _ = pd
     if os.environ.get('CANCEL'):
         raise InquireCancel
 
